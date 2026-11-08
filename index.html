@@ -22,10 +22,10 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
 .float{position:absolute;font-weight:700;font-size:28px;color:#fff;pointer-events:none;animation:up .8s forwards}
 @keyframes up{to{transform:translateY(-90px);opacity:0}}
 .card{background:var(--surface);border-radius:26px;padding:16px 18px;box-shadow:0 7px 0 rgba(0,0,0,.2)}
-#eggBox{text-align:center;min-width:230px}
+#eggBox,#hBox{text-align:center;width:min(430px,92vw)}
 #eggIcon{font-size:84px;line-height:1.1;animation:bob 2s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-8px)}}
-#odds{min-width:210px;font-size:15px}
+#odds,#hOdds{width:min(270px,92vw);font-size:15px}
 #odds div.o{display:flex;justify-content:space-between;gap:10px;margin-top:6px}
 .btn{--sh:#23703a;border:none;border-radius:16px;padding:10px 16px;font:inherit;font-weight:700;font-size:17px;color:#fff;cursor:pointer;background:#3aa655;box-shadow:0 5px 0 var(--sh);transition:transform .06s}
 .btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--sh)}.sq:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
@@ -90,7 +90,7 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
 #bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 12px;padding:10px 12px}#bar #top,#bar #acct{padding:0}#bar #top{justify-content:flex-start}
 .adl{position:relative;font-weight:700;font-size:18px;margin-top:8px}
 .erow{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
-#hBox{text-align:center;min-width:230px;box-shadow:0 7px 0 #b36f00}#hOdds{min-width:210px;font-size:15px}#hOdds div.o{display:flex;justify-content:space-between;gap:10px;margin-top:6px;padding:4px 6px}
+#hOdds div.o{display:flex;justify-content:space-between;gap:10px;margin-top:6px;padding:4px 6px}
 </style></head>
 <body>
 <div id="game">
