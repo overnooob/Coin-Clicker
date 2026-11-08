@@ -91,9 +91,11 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
 .adl{position:relative;font-weight:700;font-size:18px;margin-top:8px}
 .erow{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
 .eic{font-size:84px;line-height:1.1;animation:bob 2s ease-in-out infinite}
-.r-Legendary{background:#ffe08a;color:#6b4a00}.row.me{outline:3px solid #3b8dff}
+.r-Legendary{background:#ffe08a;color:#6b4a00}
+.slot.r-Common{background:#d9dce6;color:#23284a}.slot.r-Uncommon{background:#bff0c4;color:#1e4d27}.slot.r-Rare{background:#b8d6ff;color:#173a6e}.slot.r-Epic{background:#e3c4ff;color:#47216e}.slot.r-Legendary{background:#ffe08a;color:#6b4a00}.slot.r-Secret{background:#ffd0d6;color:#7a1626}.row.me{outline:3px solid #3b8dff}
 #upd{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:5;background:var(--surface);border-radius:18px;padding:6px 14px;font-weight:700;font-size:14px;line-height:1.35;box-shadow:0 4px 0 rgba(0,0,0,.2);pointer-events:none}
 @media (max-width:700px){#dock{padding-bottom:74px}}
+#modal.rw{flex-direction:column;gap:12px}#modal.rw #panel{max-height:calc(100vh - 210px)}
 </style></head>
 <body>
 <div id="game">
@@ -114,7 +116,7 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
   <button class="btn red" data-p="inv">🎒 Pets</button>
  </div>
 </div>
-<div id="modal"><div id="panel"><div id="ph"><span id="pt"></span><button class="btn red" id="close">✕</button></div><div id="pb"></div></div></div>
+<div id="modal"><div id="rw" style="display:none"></div><div id="panel"><div id="ph"><span id="pt"></span><button class="btn red" id="close">✕</button></div><div id="pb"></div></div></div>
 <div id="ov"><div id="oe">🥚</div><div id="res"><div class="rays"></div><div class="big"></div><div class="nm"></div><div class="pill" style="font-size:16px;margin-top:8px;position:relative"></div><div class="adl"></div></div></div>
 <div id="cf"><div class="card"><div id="cft"></div><div style="display:flex;gap:10px;justify-content:center;margin-top:14px"><button class="btn red" id="cfy">Delete</button><button class="btn gray" id="cfn">Cancel</button></div></div></div>
 <div id="login"><div class="card"><div id="lcoin">🪙</div><div id="ltitle">Coin Clicker</div>
@@ -153,8 +155,8 @@ const pw=p=>PETS[p.t].p*(p.titan?TIERS.titan.m:p.huge?TIERS.huge.m:1), pn=p=>(p.
 const adMap=k=>k=='huge'?S.autoDelH:k=='titan'?S.autoDelT:S.autoDel;
 const kind=p=>p.titan?2:p.huge?1:0;
 const mult=()=>1+equipped().reduce((a,p)=>a+pw(p),0);
-const craftGroups=()=>{const g={};S.pets.forEach(p=>{if(!p.huge&&!p.titan&&!p.lock&&!p.eq)(g[p.t]=g[p.t]||[]).push(p)});return g};
-const craftAllN=()=>Object.values(craftGroups()).reduce((a,l)=>a+Math.floor(l.length/3),0);
+const craftGroups=k=>{const g={};S.pets.forEach(p=>{if(kind(p)==k&&!p.lock&&!p.eq)(g[p.t]=g[p.t]||[]).push(p)});return g};
+const craftAllN=()=>[0,1].reduce((n,k)=>n+Object.values(craftGroups(k)).reduce((a,l)=>a+Math.floor(l.length/3),0),0);
 const craftList=p=>p.lock||p.titan?[]:S.pets.filter(x=>x.t==p.t&&kind(x)==kind(p)&&!x.lock&&(x==p||!x.eq));
 function ask(m,cb){$('cft').textContent=m;$('cf').className='show';$('cfy').onclick=()=>{$('cf').className='';cb()};$('cfn').onclick=()=>$('cf').className=''}
 const cpc=()=>(1+S.up.clicks)*mult()*evm('coins');
@@ -231,7 +233,7 @@ const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function lbHtml(){const tabs=`<div style="display:flex;gap:8px;justify-content:center;margin-bottom:10px"><button class="btn ${LBmode=='coins'?'orange':'gray'}" onclick="setLB('coins')">🪙 Coins</button><button class="btn ${LBmode=='power'?'orange':'gray'}" onclick="setLB('power')">🐾 Pet Power</button></div>`;
  if(LBerr)return tabs+`<p style="text-align:center">Leaderboard unavailable (${esc(LBerr)})</p>`;if(!LBdata)return tabs+'<p style="text-align:center">Loading…</p>';const me=$('nick').textContent;
  return tabs+`<div style="font-size:12px;opacity:.7;text-align:center;margin-bottom:8px">Top 100 · refreshes every 10s</div>`+(LBdata.map((u,i)=>`<div class="row ${u.nick===me?'me':''}" style="padding:8px 14px;margin-bottom:6px"><b style="min-width:42px;font-size:20px">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</b><div class="tx"><b>${esc(u.nick)}</b></div><b>${LBmode=='power'?'🐾 x'+fmtD(+u.power||0):'🪙 '+fmt(+u.coins||0)}</b></div>`).join('')||'<p style="text-align:center">No players yet.</p>')}
-function setLB(m){if(LBmode==m)return;LBmode=m;LBdata=null;LBerr='';if(panel=='lb')$('pb').innerHTML=lbHtml();loadLB()}
+function setLB(m){if(LBmode==m)return;LBmode=m;rwShow();LBdata=null;LBerr='';if(panel=='lb')$('pb').innerHTML=lbHtml();loadLB()}
 function loadLB(){const m=LBmode;if(!window.LB){LBerr='not ready';if(panel=='lb')$('pb').innerHTML=lbHtml();return}
  LB.fetch(m).then(d=>{if(m==LBmode){LBdata=d;LBerr=''}}).catch(e=>{if(m==LBmode)LBerr=e.code||e.message}).then(()=>{if(m==LBmode&&panel=='lb')$('pb').innerHTML=lbHtml()})}
 setInterval(()=>{if(panel=='lb')loadLB()},10000);
@@ -241,12 +243,17 @@ function chatUpd(){const last=chatData.length?chatData[chatData.length-1].t:0;if
  const el=$('cmsgs');if(el){const bot=el.scrollHeight-el.scrollTop-el.clientHeight<60;el.innerHTML=chatHtml();if(bot)el.scrollTop=el.scrollHeight}}
 function setChat(d){chatData=d;if(!chatInit){chatInit=true;chatSeen=d.length?d[d.length-1].t:0}chatUpd()}
 function chatSend(){const v=$('cin').value.trim();if(!v)return;if(Date.now()-chatLast<1200)return toast('Slow down!');if(!window.Chat)return toast('Chat not ready');chatLast=Date.now();$('cin').value='';Chat.send(v.slice(0,150)).catch(e=>toast('Chat failed: '+(e.code||e.message)))}
+function rwShow(){const on=panel=='lb'&&LBmode=='power';$('modal').classList.toggle('rw',on);const el=$('rw');el.style.display=on?'':'none';if(!on)return;
+ if(!el.dataset.f){el.dataset.f=1;el.innerHTML=`<div class="card" style="width:min(620px,100%);padding:10px 14px;text-align:center"><div style="display:flex;gap:10px;justify-content:space-around;flex-wrap:wrap;font-weight:700">${REWARDS.map((k,i)=>`<div><div style="font-size:24px">${['🥇','🥈','🥉'][i]}:</div><div style="font-size:15px">${PETS.phx.e} ${TIERS[k].n} ${PETS.phx.n}</div></div>`).join('')}</div><div id="rwt" style="font-size:13px;opacity:.8;margin-top:6px"></div></div>`}
+ const r=Math.ceil((DELIVER-Date.now())/1000);$('rwt').textContent=r>0?'🎁 Rewards delivered in: '+cd(r):'🎁 Rewards delivered!'}
+function claimCheck(){const d=S.rewardsDoc;if(!S.in||S.rw||!d||!Game.uid||!d.winners)return;const i=d.winners.findIndex(w=>w.uid===Game.uid);if(i<0||!REWARDS[i])return;
+ S.rw=1;const k=REWARDS[i];S.pets.push({id:S.uid++,t:'phx',[k]:true,lock:false,eq:false});toast('🎁 Pet Power #'+(i+1)+' reward: '+TIERS[k].n+' '+PETS.phx.n+'!',10000,'ann');sfx('epic');if(panel=='inv')render()}
 function open(p){panel=p;$('modal').className='show';S.sel.clear();S.multi=false;if(p=='lb'){LBdata=null;LBerr='';loadLB()}render()}
-function shut(){panel=null;$('modal').className=''}
+function shut(){panel=null;$('modal').className='';rwShow()}
 $('close').onclick=shut;$('modal').onclick=e=>{if(e.target.id=='modal')shut()};
 document.querySelectorAll('#dock .btn').forEach(b=>b.onclick=()=>open(b.dataset.p));
 function render(){
- const pb=$('pb');ui();
+ const pb=$('pb');ui();rwShow();
  if(panel=='tp'){$('pt').textContent='🌀 Teleport';
   pb.innerHTML=Object.entries(WORLDS).map(([k,w])=>{const un=S.unlocked[k];return `<div class="row"><div class="ic">${w.e}</div><div class="tx"><b>${w.n}</b>${un?'':'<small>Cost 🪙 '+fmt(w.cost)+'</small>'}</div>
    <button class="btn ${S.world==k?'gray':un?'':'orange'}" data-w="${k}" ${S.world==k?'disabled':''}>${S.world==k?'Here':un?'Teleport':'Unlock'}</button></div>`}).join('');
@@ -285,7 +292,10 @@ function render(){
   const g=id=>pb.querySelector('#'+id);
   g('best').onclick=()=>{S.pets.forEach(p=>p.eq=false);[...S.pets].sort(bySort).slice(0,slots()).forEach(p=>p.eq=true);S.sel.clear();sfx('buy');render()};
   g('multi').onclick=()=>{S.multi=!S.multi;S.sel.clear();render()};
-  g('craftall').onclick=()=>{const gr=craftGroups();let n=0;for(const t in gr){const k=Math.floor(gr[t].length/3);if(!k)continue;const use=gr[t].slice(0,k*3);S.pets=S.pets.filter(x=>!use.includes(x));for(let i=0;i<k;i++)S.pets.push({id:S.uid++,t,huge:true,lock:false,eq:false});n+=k}if(!n)return toast('Nothing to craft!');S.sel.clear();sfx('epic');toast('Crafted '+n+' Huge pet'+(n>1?'s':'')+'!');render()};
+  g('craftall').onclick=()=>{const plan=[[craftGroups(0),'huge'],[craftGroups(1),'titan']];let h=0,t=0;
+   for(const [gr,nk] of plan)for(const ty in gr){const k=Math.floor(gr[ty].length/3);if(!k)continue;const use=gr[ty].slice(0,k*3);S.pets=S.pets.filter(x=>!use.includes(x));for(let i=0;i<k;i++)S.pets.push({id:S.uid++,t:ty,[nk]:true,lock:false,eq:false});nk=='huge'?h+=k:t+=k}
+   if(!h&&!t)return toast('Nothing to craft!');S.sel.clear();sfx('epic');
+   toast('Crafted '+[h?h+' Huge':'',t?t+' Titanic':''].filter(Boolean).join(' + ')+'!');render()};
   if(g('all'))g('all').onclick=()=>{S.pets.filter(p=>!p.eq).forEach(p=>S.sel.add(p.id));render()};
   if(g('delsel'))g('delsel').onclick=()=>{const bad=sel.filter(p=>p.lock).length,ok=sel.filter(p=>!p.lock);const go=()=>{S.pets=S.pets.filter(p=>!ok.includes(p));S.sel.clear();if(bad)toast(`${bad} locked pets were kept`);render()};ok.some(p=>p.huge||p.titan||PETS[p.t].r=='Secret')?ask('Your selection has a Secret, Huge or Titanic pet. Delete anyway?',go):go()};
   if(g('eqb'))g('eqb').onclick=()=>{const p=sel[0];if(p.eq)p.eq=false;else{if(eq.length>=slots()){sfx('err');return toast('All slots are full!')}p.eq=true}S.sel.clear();sfx('click');render()};
@@ -293,20 +303,22 @@ function render(){
   if(g('del'))g('del').onclick=()=>{const p=sel[0];if(p.lock)return toast('Pet is locked!');if(p.eq)return toast('Unequip it first!');const go=()=>{S.pets=S.pets.filter(x=>x!=p);S.sel.clear();render()};(p.huge||p.titan||PETS[p.t].r=='Secret')?ask('Delete '+pn(p)+'? This cannot be undone.',go):go()}
   if(g('craft'))g('craft').onclick=()=>{const p=sel[0],l=craftList(p);if(l.length<3)return;const use=[p,...l.filter(x=>x!=p)].slice(0,3);S.pets=S.pets.filter(x=>!use.includes(x));const nk=p.huge?'titan':'huge';S.pets.push({id:S.uid++,t:p.t,[nk]:true,lock:false,eq:false});S.sel.clear();sfx('epic');toast('Crafted '+TIERS[nk].n+' '+PETS[p.t].n+'!');render()}}
 }
-window.Game={save:()=>({coins:S.coins,world:S.world,unlocked:S.unlocked,up:S.up,pets:S.pets,uid:S.uid,autoClick:S.autoClick,autoDel:S.autoDel,autoDelH:S.autoDelH,autoDelT:S.autoDelT}),
- load:d=>{S.coins=d.coins||0;S.world=EGGS[d.world]?d.world:'spawn';S.unlocked=Object.assign({spawn:1},d.unlocked);S.up=Object.assign({clicks:0,luck:0,equips:0,storage:0,auto:0,hatch:0},d.up);S.pets=(d.pets||[]).filter(p=>PETS[p.t]);S.uid=d.uid||(1+S.pets.reduce((m,p)=>Math.max(m,p.id),0));S.autoClick=d.autoClick!==false;S.autoDel=d.autoDel||{};S.autoDelH=d.autoDelH||{};S.autoDelT=d.autoDelT||{};S.in=true;ui()}};
+window.Game={save:()=>({coins:S.coins,world:S.world,unlocked:S.unlocked,up:S.up,pets:S.pets,uid:S.uid,autoClick:S.autoClick,autoDel:S.autoDel,autoDelH:S.autoDelH,autoDelT:S.autoDelT,rw:S.rw?1:0}),
+ load:d=>{S.coins=d.coins||0;S.world=EGGS[d.world]?d.world:'spawn';S.unlocked=Object.assign({spawn:1},d.unlocked);S.up=Object.assign({clicks:0,luck:0,equips:0,storage:0,auto:0,hatch:0},d.up);S.pets=(d.pets||[]).filter(p=>PETS[p.t]);S.uid=d.uid||(1+S.pets.reduce((m,p)=>Math.max(m,p.id),0));S.autoClick=d.autoClick!==false;S.autoDel=d.autoDel||{};S.autoDelH=d.autoDelH||{};S.autoDelT=d.autoDelT||{};S.rw=!!d.rw;S.in=true;ui()}};
 const EVI={coins:'🪙',luck:'🍀',speed:'⚡'};let evKey='';
 function tierOn(k){const x=S.tier[k];return !!(x&&x.end>Date.now()&&x.egg===S.world)}
 function evm(k){const e=S.ev[k];return e&&e.end>Date.now()?e.m:1}
 function tf(s){const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return (d?d+'d ':'')+(h?h+'h ':'')+(m?m+'m ':'')+(s%60)+'s'}
 const UPD=new Date('2026-11-09T15:00:00+01:00').getTime();
+const DELIVER=UPD-5*60*1000,REWARDS=['titan','huge','titan'];
 function cd(s){const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),p=[];if(d)p.push(d+'d');if(d||h)p.push(h+'h');if(d||h||m)p.push(m+'m');p.push(s%60+'s');return p.join(' ')}
 function tick(){const now=Date.now();let h='',key='';for(const k of ['coins','luck','speed']){const e=S.ev[k];if(e&&e.end>now){h+=`<div class="pill" style="font-size:16px;background:#ffe27a;color:#4a2b00">x${e.m} ${EVI[k]}: ${tf(Math.ceil((e.end-now)/1000))}</div>`;key+=k+e.m+e.end}}
  for(const k in TIERS){const x=S.tier[k];if(x&&x.end>now&&EGGS[x.egg])h+=`<div class="pill" style="font-size:16px;background:#ffe27a;color:#4a2b00">${TIERS[k].n} ${EGGS[x.egg].e}: ${tf(Math.ceil((x.end-now)/1000))}</div>`;key+=k+tierOn(k)+(x?x.end:0)}
  {const r=Math.ceil((UPD-now)/1000);$('updt').textContent=r>0?cd(r):'Live now! 🎉'}
+ {const el=$('rwt');if(el){const r=Math.ceil((DELIVER-now)/1000);el.textContent=r>0?'🎁 Rewards delivered in: '+cd(r):'🎁 Rewards delivered!'}}
  $('evs').innerHTML=h;if(key!==evKey){evKey=key;ui()}}
 Game.setEvents=d=>{S.ev={};for(const k of ['coins','luck','speed'])if(d[k]&&d[k].end>Date.now())S.ev[k]={m:+d[k].m,end:+d[k].end};tick()};
-Game.setChat=setChat;
+Game.setChat=setChat;Game.deliver=DELIVER;Game.setRewards=d=>{S.rewardsDoc=d;claimCheck()};
 Game.power=()=>S.pets.reduce((a,p)=>a+pw(p),0);
 Game.setTier=(k,d)=>{S.tier[k]=d&&d.end>Date.now()?{egg:d.egg,end:+d.end}:null;tick();ui()};Game.setHuge=d=>Game.setTier('huge',d);Game.setTitan=d=>Game.setTier('titan',d);
 Game.announce=(f,t)=>toast(f+': '+String(t).slice(0,100),10000,'ann');
@@ -332,6 +344,13 @@ Game.pushLB=async()=>{if(!user||!Game.ready)return;try{await setDoc(doc(db,'lead
 window.LB={fetch:async(m)=>{await Game.pushLB();const sn=await getDocs(query(collection(db,'leaderboard'),orderBy(m=='power'?'power':'coins','desc'),limit(100)));return sn.docs.map(d=>d.data())}};
 const chatAdd=(text,type)=>{if(!user)return Promise.reject({code:'not-signed-in'});return addDoc(collection(db,'chat'),{uid:user.uid,nick:user.displayName||user.email.split('@')[0],text,type,t:Date.now()})};
 window.Chat={send:t=>chatAdd(t,'msg'),secret:t=>chatAdd(t,'secret').catch(()=>{})};
+let rwDone=false,rwLast=0;
+async function tryRewards(){if(rwDone||!user||!Game.ready||Date.now()<Game.deliver||Date.now()-rwLast<30000)return;rwLast=Date.now();
+ try{if((await getDoc(doc(db,'events','rewards'))).exists()){rwDone=true;return}
+  const sn=await getDocs(query(collection(db,'leaderboard'),orderBy('power','desc'),limit(3)));
+  const w=sn.docs.map(d=>({uid:d.id,nick:d.data().nick||'?',power:d.data().power||0}));
+  if(w.length){await setDoc(doc(db,'events','rewards'),{winners:w,at:Date.now()});rwDone=true}}catch(e){}}
+setInterval(tryRewards,5000);
 const mail=n=>n.toLowerCase()+'@coinclicker.game', pwd=p=>'cc!'+p+'!game';
 function check(reg){if(!reg){const n=$('lnick').value.trim(),p=$('lpass').value;if(!n||!p){err('Enter your nickname and password.');return null}err('');return [n,p]}const n=$('lnick').value.trim(),p=$('lpass').value;
  if(!/^[A-Za-z0-9_-]{3,20}$/.test(n)){err('Nickname: 3-20 characters (letters, numbers, _ or -).');return null}
@@ -347,12 +366,12 @@ $('ltab1').onclick=()=>setMode(false);$('ltab2').onclick=()=>setMode(true);$('lg
 async function saveNow(){if(!user||!Game.ready)return;const d=Game.save(),j=JSON.stringify(d);if(j===lastJson)return;lastJson=j;try{await setDoc(doc(db,'users',user.uid),d);Game.pushLB()}catch(e){lastJson=''}}
 onAuthStateChanged(auth,async u=>{
  if(!u){user=null;$('login').style.display='flex';return}
- user=u;$('nick').textContent=u.displayName||u.email.split('@')[0];
+ user=u;Game.uid=u.uid;$('nick').textContent=u.displayName||u.email.split('@')[0];
  try{const snap=await getDoc(doc(db,'users',u.uid));Game.load(snap.exists()?snap.data():{});Game.ready=true;lastJson=JSON.stringify(Game.save())}
  catch(e){err('Could not load your save: '+e.code);await signOut(auth);return}
  $('login').style.display='none';$('lpass').value='';
  if(u.email.split('@')[0]==='overrguy')$('adminBtn').style.display='';
- if(!evSub){evSub=1;onSnapshot(evDoc(),sn=>Game.setEvents(sn.exists()?sn.data():{}),()=>{});onSnapshot(doc(db,'events','huge'),sn=>Game.setHuge(sn.exists()?sn.data():null),()=>{});onSnapshot(query(collection(db,'chat'),orderBy('t','desc'),limit(50)),sn=>Game.setChat(sn.docs.map(d=>d.data()).reverse()),()=>{});onSnapshot(doc(db,'events','titan'),sn=>Game.setTitan(sn.exists()?sn.data():null),()=>{});let lastMsg=0;onSnapshot(doc(db,'events','msg'),sn=>{if(!sn.exists())return;const d=sn.data();if(d.id===lastMsg)return;lastMsg=d.id;if(Math.abs(Date.now()-d.sent)<20000)Game.announce(d.from,d.text)},()=>{})}});
+ if(!evSub){evSub=1;onSnapshot(evDoc(),sn=>Game.setEvents(sn.exists()?sn.data():{}),()=>{});onSnapshot(doc(db,'events','huge'),sn=>Game.setHuge(sn.exists()?sn.data():null),()=>{});onSnapshot(query(collection(db,'chat'),orderBy('t','desc'),limit(50)),sn=>Game.setChat(sn.docs.map(d=>d.data()).reverse()),()=>{});onSnapshot(doc(db,'events','rewards'),sn=>{if(sn.exists())rwDone=true;Game.setRewards(sn.exists()?sn.data():null)},()=>{});onSnapshot(doc(db,'events','titan'),sn=>Game.setTitan(sn.exists()?sn.data():null),()=>{});let lastMsg=0;onSnapshot(doc(db,'events','msg'),sn=>{if(!sn.exists())return;const d=sn.data();if(d.id===lastMsg)return;lastMsg=d.id;if(Math.abs(Date.now()-d.sent)<20000)Game.announce(d.from,d.text)},()=>{})}});
 setInterval(saveNow,15000);
 addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 $('logout').onclick=async()=>{await saveNow();await signOut(auth);location.reload()};
