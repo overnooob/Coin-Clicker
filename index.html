@@ -22,11 +22,11 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
 .float{position:absolute;font-weight:700;font-size:28px;color:#fff;pointer-events:none;animation:up .8s forwards}
 @keyframes up{to{transform:translateY(-90px);opacity:0}}
 .card{background:var(--surface);border-radius:26px;padding:16px 18px;box-shadow:0 7px 0 rgba(0,0,0,.2)}
-#eggBox,#hBox{text-align:center;width:min(430px,92vw)}
+#eggBox,.eb{text-align:center;width:min(430px,92vw)}
 #eggIcon{font-size:84px;line-height:1.1;animation:bob 2s ease-in-out infinite}
 @keyframes bob{50%{transform:translateY(-8px)}}
-#odds,#hOdds{width:min(320px,92vw);font-size:15px}
-#odds div.o{display:flex;justify-content:space-between;gap:10px;margin-top:6px}
+#odds,.od{width:min(320px,92vw);font-size:15px}
+#odds div.o,.od div.o{display:flex;justify-content:space-between;gap:10px;margin-top:6px}
 .btn{--sh:#23703a;border:none;border-radius:16px;padding:10px 16px;font:inherit;font-weight:700;font-size:17px;color:#fff;cursor:pointer;background:#3aa655;box-shadow:0 5px 0 var(--sh);transition:transform .06s}
 .btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--sh)}.sq:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
 .btn.blue{background:#3b8dff;--sh:#1e56b0}.btn.red{background:#ee4b5a;--sh:#a02633}
@@ -71,7 +71,7 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
 #res .big{font-size:min(36vw,150px);position:relative}
 #res .nm{font-size:34px;font-weight:700;position:relative}
 #acct{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:10px 12px 0}
-#odds div.o,#hOdds div.o{cursor:pointer;border-radius:12px;padding:4px 6px}#odds div.o.ad,#hOdds div.o.ad{background:rgba(238,75,90,.2)}
+#odds div.o,.od div.o{cursor:pointer;border-radius:12px;padding:4px 6px}#odds div.o.ad,.od div.o.ad{background:rgba(238,75,90,.2)}
 #cf{position:fixed;inset:0;background:rgba(10,15,50,.6);display:none;align-items:center;justify-content:center;z-index:40}#cf.show{display:flex}#cft{font-size:20px;font-weight:700;text-align:center;max-width:280px}
 #login{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:14px;background-color:#2f8cff;background-image:linear-gradient(45deg,#4aa0ff 25%,transparent 25%,transparent 75%,#4aa0ff 75%),linear-gradient(45deg,#4aa0ff 25%,transparent 25%,transparent 75%,#4aa0ff 75%);background-size:80px 80px;background-position:0 0,40px 40px}
 #login .card{width:min(380px,100%);text-align:center}
@@ -90,7 +90,10 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
 #bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 12px;padding:10px 12px}#bar #top,#bar #acct{padding:0}#bar #top{justify-content:flex-start}
 .adl{position:relative;font-weight:700;font-size:18px;margin-top:8px}
 .erow{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
-#hOdds div.o{display:flex;justify-content:space-between;gap:10px;margin-top:6px;padding:4px 6px}
+.eic{font-size:84px;line-height:1.1;animation:bob 2s ease-in-out infinite}
+.r-Legendary{background:#ffe08a;color:#6b4a00}.pet.ti{box-shadow:0 0 0 3px #ffc928,0 0 14px #ffc928}.row.me{outline:3px solid #3b8dff}
+#upd{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:5;background:var(--surface);border-radius:18px;padding:6px 14px;font-weight:700;font-size:14px;line-height:1.35;box-shadow:0 4px 0 rgba(0,0,0,.2);pointer-events:none}
+@media (max-width:700px){#dock{padding-bottom:74px}}
 </style></head>
 <body>
 <div id="game">
@@ -103,12 +106,13 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
    <div id="eggIcon">🥚</div>
    <div style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="btn" id="hatch"></button><button class="btn gray" id="auto"></button></div>
   </div>
-  <div class="card" id="odds"></div></div><div class="erow" id="hrow" style="display:none"><div class="card" id="hBox"><div style="font-weight:700;font-size:22px" id="hName"></div><div id="hIcon" style="font-size:84px;line-height:1.1"></div><div style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="btn" id="hHatch"></button><button class="btn gray" id="hAuto"></button></div></div><div class="card" id="hOdds"></div></div></div>
+  <div class="card" id="odds"></div></div><div id="tiers" style="display:flex;flex-direction:column;gap:16px"></div></div>
  </div>
  <div id="dock">
   <button class="btn blue" data-p="tp">🌀 Teleport</button>
   <button class="btn orange" data-p="up">⬆️ Upgrades</button>
   <button class="btn red" data-p="inv">🎒 Pets</button>
+  <button class="btn" data-p="lb">🏆 Leaderboard</button>
  </div>
 </div>
 <div id="modal"><div id="panel"><div id="ph"><span id="pt"></span><button class="btn red" id="close">✕</button></div><div id="pb"></div></div></div>
@@ -117,36 +121,42 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
 <div id="login"><div class="card"><div id="lcoin">🪙</div><div id="ltitle">Coin Clicker</div>
 <div id="ltabs"><button class="btn" id="ltab1">Log in</button><button class="btn gray" id="ltab2">Register</button></div><input class="inp" id="lnick" placeholder="Nickname" maxlength="20" autocomplete="username"><input class="inp" id="lpass" type="password" placeholder="Password" maxlength="50" autocomplete="current-password">
 <div id="lerr"></div><div style="margin-top:14px"><button class="btn blue" id="lgo" style="width:100%">Log in</button></div></div></div>
+<div id="upd"><div>🔁 UPDATE 2:</div><div id="updt"></div></div>
 <div id="toasts"></div>
 <script>
 const $=id=>document.getElementById(id);
-const RC={Common:0,Uncommon:1,Rare:2,Epic:3,Secret:4};
+const RC={Common:0,Uncommon:1,Rare:2,Epic:3,Legendary:4,Secret:5};
 const PETS={
  cat:{n:'Cat',e:'🐱',r:'Common',p:.2},dog:{n:'Dog',e:'🐶',r:'Uncommon',p:.5},bunny:{n:'Bunny',e:'🐰',r:'Rare',p:1.2},
- ccat:{n:'Candy Cat',e:'😻',r:'Uncommon',p:3},cdog:{n:'Choclate Dog',e:'🐕',r:'Rare',p:6},lbun:{n:'Lolipop Bunny',e:'🍭',r:'Epic',p:14},over:{n:'Candy Overlord',e:'😈',r:'Secret',p:100}};
+ ccat:{n:'Candy Cat',e:'😻',r:'Uncommon',p:3},cdog:{n:'Choclate Dog',e:'🐕',r:'Rare',p:6},lbun:{n:'Lolipop Bunny',e:'🍭',r:'Epic',p:14},over:{n:'Candy Overlord',e:'😈',r:'Secret',p:100},
+ lcat:{n:'Lava Cat',e:'😾',r:'Uncommon',p:30},mdog:{n:'Magma Dog',e:'🐺',r:'Rare',p:60},fbun:{n:'Fire Bunny',e:'🐇',r:'Epic',p:140},ldrg:{n:'Lava Dragon',e:'🐉',r:'Legendary',p:400},phx:{n:'Phoenix',e:'🐦‍🔥',r:'Secret',p:2500}};
 const EGGS={
  spawn:{n:'Basic Egg',e:'🥚',cost:100,loot:[['cat',60],['dog',30],['bunny',10]]},
- candy:{n:'Choclate Egg',e:'🍫',cost:2500,loot:[['ccat',60],['cdog',30],['lbun',9.99],['over',.01]]}};
-const WORLDS={spawn:{n:'Spawn',e:'🌳',cost:0},candy:{n:'Candy',e:'🍬',cost:4000}};
-const STORAGE=[100,150,200,250,300,350];
+ candy:{n:'Choclate Egg',e:'🍫',cost:2500,loot:[['ccat',60],['cdog',30],['lbun',9.99],['over',.01]]},
+ lava:{n:'Magma Egg',e:'🔥',cost:40000,loot:[['lcat',55],['mdog',30],['fbun',13],['ldrg',1.98],['phx',.02]]}};
+const WORLDS={spawn:{n:'Spawn',e:'🌳',cost:0},candy:{n:'Candy',e:'🍬',cost:4000},lava:{n:'Lava',e:'🌋',cost:100000}};
+const TIERS={huge:{n:'Huge',m:1.3,cost:3},titan:{n:'Titanic',m:1.6,cost:8}};
+const STORAGE=[100,150,200,250,300,350,400];
 const hatchTime=l=>2600-l*200;
 const autoRate=l=>1+l*.5;
 const UP={
- clicks:{n:'Coins',e:'🪙',max:25,cost:l=>Math.round(20*Math.pow(1.5,l)),d:l=>`+${l+1} base coins per click`},
- luck:{n:'Luck',e:'🍀',max:20,cost:l=>Math.round(150*Math.pow(1.7,l)),d:l=>`Rare pets +${l*5}% more likely`},
- equips:{n:'Pet Equips',e:'🐾',max:2,cost:l=>[8000,80000][l],d:l=>`${3+l} equip slots`},
- storage:{n:'Storage',e:'📦',max:5,cost:l=>Math.round(500*Math.pow(3,l)),d:l=>`Holds ${STORAGE[l]} pets`},
- auto:{n:'Auto Clicker Speed',e:'🤖',max:10,cost:l=>Math.round(200*Math.pow(1.8,l)),d:l=>`${autoRate(l)} auto clicks / sec`},
- hatch:{n:'Hatch Speed',e:'⚡',max:5,cost:l=>Math.round(300*Math.pow(2.6,l)),d:l=>`Hatch takes ${(hatchTime(l)/1000).toFixed(1)}s`}};
-const S={coins:0,world:'spawn',unlocked:{spawn:1},up:{clicks:0,luck:0,equips:0,storage:0,auto:0,hatch:0},pets:[],uid:1,autoHatch:false,autoHatchH:false,autoClick:true,busy:false,in:false,autoDel:{},autoDelH:{},ev:{},huge:null,sel:new Set(),multi:false};
-let autoWait=0,panel=null,autoAcc=0,music=true,sound=true;
+ clicks:{n:'Coins',e:'🪙',max:30,cost:l=>Math.round(20*Math.pow(1.5,l)),d:l=>`+${l+1} base coins per click`},
+ luck:{n:'Luck',e:'🍀',max:25,cost:l=>Math.round(150*Math.pow(1.7,l)),d:l=>`Rare pets +${l*5}% more likely`},
+ equips:{n:'Pet Equips',e:'🐾',max:3,cost:l=>[8000,80000,800000][l],d:l=>`${3+l} equip slots`},
+ storage:{n:'Storage',e:'📦',max:6,cost:l=>Math.round(500*Math.pow(3,l)),d:l=>`Holds ${STORAGE[l]} pets`},
+ auto:{n:'Auto Clicker Speed',e:'🤖',max:12,cost:l=>Math.round(200*Math.pow(1.8,l)),d:l=>`${autoRate(l)} auto clicks / sec`},
+ hatch:{n:'Hatch Speed',e:'⚡',max:8,cost:l=>Math.round(300*Math.pow(2.6,l)),d:l=>`Hatch takes ${(hatchTime(l)/1000).toFixed(1)}s`}};
+const S={coins:0,world:'spawn',unlocked:{spawn:1},up:{clicks:0,luck:0,equips:0,storage:0,auto:0,hatch:0},pets:[],uid:1,auto:'',autoClick:true,busy:false,in:false,autoDel:{},autoDelH:{},autoDelT:{},ev:{},tier:{huge:null,titan:null},sel:new Set(),multi:false};
+let LBdata=null,LBerr='',autoWait=0,panel=null,autoAcc=0,music=true,sound=true;
 const slots=()=>3+S.up.equips, cap=()=>STORAGE[S.up.storage];
 const equipped=()=>S.pets.filter(p=>p.eq);
-const pw=p=>PETS[p.t].p*(p.huge?1.3:1), pn=p=>(p.huge?'Huge ':'')+PETS[p.t].n;
+const pw=p=>PETS[p.t].p*(p.titan?TIERS.titan.m:p.huge?TIERS.huge.m:1), pn=p=>(p.titan?'Titanic ':p.huge?'Huge ':'')+PETS[p.t].n;
+const adMap=k=>k=='huge'?S.autoDelH:k=='titan'?S.autoDelT:S.autoDel;
+const kind=p=>p.titan?2:p.huge?1:0;
 const mult=()=>1+equipped().reduce((a,p)=>a+pw(p),0);
-const craftGroups=()=>{const g={};S.pets.forEach(p=>{if(!p.huge&&!p.lock&&!p.eq)(g[p.t]=g[p.t]||[]).push(p)});return g};
+const craftGroups=()=>{const g={};S.pets.forEach(p=>{if(!p.huge&&!p.titan&&!p.lock&&!p.eq)(g[p.t]=g[p.t]||[]).push(p)});return g};
 const craftAllN=()=>Object.values(craftGroups()).reduce((a,l)=>a+Math.floor(l.length/3),0);
-const craftList=p=>p.lock||p.huge?[]:S.pets.filter(x=>x.t==p.t&&!x.huge&&!x.lock&&(x==p||!x.eq));
+const craftList=p=>p.lock||p.titan?[]:S.pets.filter(x=>x.t==p.t&&kind(x)==kind(p)&&!x.lock&&(x==p||!x.eq));
 function ask(m,cb){$('cft').textContent=m;$('cf').className='show';$('cfy').onclick=()=>{$('cf').className='';cb()};$('cfn').onclick=()=>$('cf').className=''}
 const cpc=()=>(1+S.up.clicks)*mult()*evm('coins');
 function fmt(n){n=Math.floor(n);if(n<1e3)return''+n;const u=['K','M','B','T','Qa'];let i=-1;while(n>=1e3&&i<u.length-1){n/=1e3;i++}return (n<10?n.toFixed(2):n<100?n.toFixed(1):Math.floor(n))+u[i]}
@@ -177,52 +187,54 @@ setInterval(()=>{const n=performance.now(),dt=(n-last)/1000;last=n;if(!S.autoCli
 function roll(){const egg=EGGS[S.world],lk=(1+S.up.luck*.05)*evm('luck');
  const w=egg.loot.map(([k,c],i)=>[k,i==0?c:c*lk]);const tot=w.reduce((a,x)=>a+x[1],0);let r=Math.random()*tot;
  for(const [k,c] of w){if((r-=c)<=0)return k}return w[0][0]}
-function hatch(silent,big){
- const egg=EGGS[S.world],cost=egg.cost*(big?3:1);
+function hatch(silent,tier){
+ const egg=EGGS[S.world],T=tier?TIERS[tier]:null,cost=egg.cost*(T?T.cost:1),mode=tier||'n';
  if(S.busy||!S.in)return false;
- if(big&&!hugeOn()){if(S.autoHatchH){S.autoHatchH=false;ui()}return false}
- if(S.pets.length>=cap()){if(!silent)toast('Storage full!');if(S.autoHatch||S.autoHatchH){S.autoHatch=S.autoHatchH=false;ui();toast('Auto Hatch stopped: storage full')}return false}
- if(S.coins<cost){if(big?S.autoHatchH:S.autoHatch){S.autoHatch=S.autoHatchH=false;ui();toast('Auto Hatch stopped: not enough coins')}else if(!silent){toast('Not enough coins!');sfx('err')}return false}
+ if(T&&!tierOn(tier)){if(S.auto==tier){S.auto='';ui()}return false}
+ if(S.pets.length>=cap()){if(!silent)toast('Storage full!');if(S.auto){S.auto='';ui();toast('Auto Hatch stopped: storage full')}return false}
+ if(S.coins<cost){if(S.auto==mode){S.auto='';ui();toast('Auto Hatch stopped: not enough coins')}else if(!silent){toast('Not enough coins!');sfx('err')}return false}
  add(-cost);S.busy=true;sfx('buy');
- const t=roll(),p=PETS[t],del=!!(big?S.autoDelH:S.autoDel)[t],sec=p.r=='Secret';
- if(!del)S.pets.push({id:S.uid++,t,lock:false,eq:false,...(big?{huge:true}:{})});
+ const t=roll(),p=PETS[t],del=!!adMap(tier)[t],sec=p.r=='Secret';
+ if(!del)S.pets.push({id:S.uid++,t,lock:false,eq:false,...(T?{[tier]:true}:{})});
  const d=hatchTime(S.up.hatch)/evm('speed')+(sec?10000:0),oe=$('oe'),res=$('res');
  res.className='';$('ov').className='show';oe.style.display='';oe.textContent=egg.e;oe.className='in';
  setTimeout(()=>{oe.style.setProperty('--d',d+'ms');oe.className='shake';
   const st=setInterval(()=>sfx('shake'),160);
   setTimeout(()=>{
    clearInterval(st);oe.style.display='none';
-   res.querySelector('.big').textContent=p.e;res.querySelector('.nm').textContent=(big?'Huge ':'')+p.n;
-   const b=res.querySelector('.pill');b.textContent=p.r+' · x'+(big?+(p.p*1.3).toFixed(2):p.p);res.querySelector('.adl').textContent=del?'🗑️ Auto Deleted':'';b.className='pill r-'+p.r;
+   res.querySelector('.big').textContent=p.e;res.querySelector('.nm').textContent=(T?T.n+' ':'')+p.n;
+   const b=res.querySelector('.pill');b.textContent=p.r+' · x'+(T?+(p.p*T.m).toFixed(2):p.p);res.querySelector('.adl').textContent=del?'🗑️ Auto Deleted':'';b.className='pill r-'+p.r;
    res.className='show';sfx(RC[p.r]>=3?'epic':'pop');
-   setTimeout(()=>{$('ov').className='';res.className='';S.busy=false;autoWait=Date.now()+1500;ui();if(panel=='inv')render()},sec?2600:(S.autoHatch||S.autoHatchH)?1000:1700)
+   setTimeout(()=>{$('ov').className='';res.className='';S.busy=false;autoWait=Date.now()+1500;ui();if(panel=='inv')render()},sec?2600:S.auto?1000:1700)
   },d)},520);
  return true}
 $('hatch').onclick=()=>hatch();
-$('hHatch').onclick=()=>hatch(false,true);
-$('auto').onclick=()=>{S.autoHatch=!S.autoHatch;if(S.autoHatch)S.autoHatchH=false;ui()};
-$('hAuto').onclick=()=>{S.autoHatchH=!S.autoHatchH;if(S.autoHatchH)S.autoHatch=false;ui()};
-setInterval(()=>{if(S.busy||panel||Date.now()<autoWait)return;if(S.autoHatchH)hatch(true,true);else if(S.autoHatch)hatch(true)},300);
+$('auto').onclick=()=>{S.auto=S.auto=='n'?'':'n';ui()};
+setInterval(()=>{if(S.busy||panel||Date.now()<autoWait)return;if(S.auto=='n')hatch(true);else if(S.auto)hatch(true,S.auto)},300);
 $('ov').onclick=()=>{};
 function ui(){
- const egg=EGGS[S.world];
+ const egg=EGGS[S.world];if(S.auto&&S.auto!='n'&&!tierOn(S.auto))S.auto='';
  $('world').textContent=WORLDS[S.world].e+' '+WORLDS[S.world].n;
  $('coins').textContent='🪙 '+fmt(S.coins);
  $('eggName').textContent=egg.n;$('eggIcon').textContent=egg.e;
  $('hatch').textContent=`Hatch 🪙 ${fmt(egg.cost)}`;
- $('auto').textContent='Auto Hatch: '+(S.autoHatch?'ON':'OFF');$('auto').className='btn '+(S.autoHatch?'':'gray');
+ $('auto').textContent='Auto Hatch: '+(S.auto=='n'?'ON':'OFF');$('auto').className='btn '+(S.auto=='n'?'':'gray');
  $('autoBtn').textContent='🤖 Auto Clicker: '+(S.autoClick?'ON':'OFF');$('autoBtn').className='btn '+(S.autoClick?'':'gray');
  const lk=(1+S.up.luck*.05)*evm('luck'),w=egg.loot.map(([t,c],i)=>[t,i?c*lk:c]),tot=w.reduce((a,x)=>a+x[1],0);
  $('odds').innerHTML=`<b style="font-size:18px">📖 Odds</b><div style="font-size:12px;opacity:.7">Tap a pet to auto delete it</div>`+w.map(([t,c])=>`<div class="o ${S.autoDel[t]?'ad':''}" data-t="${t}"><span>${PETS[t].e} ${PETS[t].n}${S.autoDel[t]?' 🗑️':''}<br><span class="pill r-${PETS[t].r}" style="font-size:11px;padding:1px 8px;box-shadow:none">${PETS[t].r}</span></span><b>${+(c/tot*100).toFixed(c/tot<.01?3:2)}%</b></div>`).join('');
  $('odds').querySelectorAll('[data-t]').forEach(e=>e.onclick=()=>{const t=e.dataset.t;if(PETS[t].r=='Secret')return toast('Secret pets can’t be auto deleted');S.autoDel[t]=!S.autoDel[t];ui()});
- const hon=hugeOn();$('hrow').style.display=hon?'flex':'none';
- if(hon){const hw=w.map(([t,c])=>[t,c]);
-  $('hName').textContent='Huge '+egg.n;$('hIcon').textContent=egg.e;$('hHatch').textContent=`Hatch 🪙 ${fmt(egg.cost*3)}`;
-  $('hAuto').textContent='Auto Hatch: '+(S.autoHatchH?'ON':'OFF');$('hAuto').className='btn '+(S.autoHatchH?'':'gray');
-  $('hOdds').innerHTML=`<b style="font-size:18px">📖 Huge Odds</b><div style="font-size:12px;opacity:.7">Tap a pet to auto delete it</div>`+hw.map(([t,c])=>`<div class="o ${S.autoDelH[t]?'ad':''}" data-t="${t}"><span>${PETS[t].e} Huge ${PETS[t].n}${S.autoDelH[t]?' 🗑️':''}<br><span class="pill r-${PETS[t].r}" style="font-size:11px;padding:1px 8px;box-shadow:none">${PETS[t].r}</span></span><b>${+(c/tot*100).toFixed(c/tot<.01?3:2)}%</b></div>`).join('');
-  $('hOdds').querySelectorAll('[data-t]').forEach(e=>e.onclick=()=>{const t=e.dataset.t;if(PETS[t].r=='Secret')return toast('Secret pets can’t be auto deleted');S.autoDelH[t]=!S.autoDelH[t];ui()})}
+ $('tiers').innerHTML=Object.keys(TIERS).filter(tierOn).map(k=>{const T=TIERS[k],ad=adMap(k);return `<div class="erow"><div class="card eb"><div style="font-weight:700;font-size:22px">${T.n} ${egg.n}</div><div class="eic">${egg.e}</div><div style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="btn" data-h="${k}">Hatch 🪙 ${fmt(egg.cost*T.cost)}</button><button class="btn ${S.auto==k?'':'gray'}" data-a="${k}">Auto Hatch: ${S.auto==k?'ON':'OFF'}</button></div></div><div class="card od"><b style="font-size:18px">📖 ${T.n} Odds</b><div style="font-size:12px;opacity:.7">Tap a pet to auto delete it</div>`+w.map(([t,c])=>`<div class="o ${ad[t]?'ad':''}" data-k="${k}" data-t="${t}"><span>${PETS[t].e} ${T.n} ${PETS[t].n}${ad[t]?' 🗑️':''}<br><span class="pill r-${PETS[t].r}" style="font-size:11px;padding:1px 8px;box-shadow:none">${PETS[t].r}</span></span><b>${+(c/tot*100).toFixed(c/tot<.01?3:2)}%</b></div>`).join('')+`</div></div>`}).join('');
+ $('tiers').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>hatch(false,b.dataset.h));
+ $('tiers').querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const k=b.dataset.a;S.auto=S.auto==k?'':k;ui()});
+ $('tiers').querySelectorAll('[data-t]').forEach(e=>e.onclick=()=>{const t=e.dataset.t,m=adMap(e.dataset.k);if(PETS[t].r=='Secret')return toast('Secret pets can’t be auto deleted');m[t]=!m[t];ui()})
 }
-function open(p){panel=p;$('modal').className='show';S.sel.clear();S.multi=false;render()}
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function lbHtml(){if(LBerr)return `<p style="text-align:center">Leaderboard unavailable (${esc(LBerr)})</p>`;if(!LBdata)return '<p style="text-align:center">Loading…</p>';const me=$('nick').textContent;
+ return `<div style="font-size:12px;opacity:.7;text-align:center;margin-bottom:8px">Top 100 · refreshes every 10s</div>`+(LBdata.map((u,i)=>`<div class="row ${u.nick===me?'me':''}" style="padding:8px 14px;margin-bottom:6px"><b style="min-width:42px;font-size:20px">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</b><div class="tx"><b>${esc(u.nick)}</b></div><b>🪙 ${fmt(+u.coins||0)}</b></div>`).join('')||'<p style="text-align:center">No players yet.</p>')}
+function loadLB(){if(!window.LB){LBerr='not ready';if(panel=='lb')$('pb').innerHTML=lbHtml();return}
+ LB.fetch().then(d=>{LBdata=d;LBerr=''}).catch(e=>{LBerr=e.code||e.message}).then(()=>{if(panel=='lb')$('pb').innerHTML=lbHtml()})}
+setInterval(()=>{if(panel=='lb')loadLB()},10000);
+function open(p){panel=p;$('modal').className='show';S.sel.clear();S.multi=false;if(p=='lb'){LBdata=null;LBerr='';loadLB()}render()}
 function shut(){panel=null;$('modal').className=''}
 $('close').onclick=shut;$('modal').onclick=e=>{if(e.target.id=='modal')shut()};
 document.querySelectorAll('#dock .btn').forEach(b=>b.onclick=()=>open(b.dataset.p));
@@ -240,12 +252,13 @@ function render(){
    <button class="btn ${mx?'gray':'orange'}" data-u="${k}" ${mx?'disabled':''}>${mx?'MAX':'🪙 '+fmt(u.cost(l))}</button></div>`}).join('');
   pb.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{const k=b.dataset.u,u=UP[k],l=S.up[k];
    if(l>=u.max)return;const c=u.cost(l);if(S.coins<c){sfx('err');return toast('Not enough coins!')}add(-c);S.up[k]++;sfx('buy');render()})}
+ else if(panel=='lb'){$('pt').textContent='🏆 Leaderboard';pb.innerHTML=lbHtml()}
  else if(panel=='admin'){$('pt').textContent='🛡️ Admin';
-  pb.innerHTML=`<div class="row" style="display:block"><b>🥚 Huge Egg</b><select class="inp" id="hg"><option value="spawn">Basic Egg</option><option value="candy">Choclate Egg</option></select><div style="display:flex;gap:6px"><input class="inp" id="aon" type="number" min="1" value="5" style="flex:1"><select class="inp" id="aou" style="flex:1"><option value="60000">minutes</option><option value="3600000">hours</option><option value="86400000">days</option></select></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn orange" id="aes">Spawn</button><button class="btn red" id="aex2">Stop</button></div></div>
+  pb.innerHTML=`<div class="row" style="display:block"><b>🥚 Huge / Titanic Egg</b><select class="inp" id="hk"><option value="huge">Huge</option><option value="titan">Titanic</option></select><select class="inp" id="hg">${Object.entries(EGGS).map(([k,e])=>`<option value="${k}">${e.n}</option>`).join('')}</select><div style="display:flex;gap:6px"><input class="inp" id="aon" type="number" min="1" value="5" style="flex:1"><select class="inp" id="aou" style="flex:1"><option value="60000">minutes</option><option value="3600000">hours</option><option value="86400000">days</option></select></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn orange" id="aes">Spawn</button><button class="btn red" id="aex2">Stop</button></div></div>
   <div class="row" style="display:block"><b>🎉 Event</b><select class="inp" id="aet"><option value="coins">🪙 Coins</option><option value="luck">🍀 Luck</option><option value="speed">⚡ Hatch Speed</option></select><input class="inp" id="aex" type="number" step="0.1" min="1" value="1.2" placeholder="Multiplier (e.g. 1.2)"><div style="display:flex;gap:6px"><input class="inp" id="aen" type="number" min="1" value="5" style="flex:1"><select class="inp" id="aeu" style="flex:1"><option value="60000">minutes</option><option value="3600000">hours</option><option value="86400000">days</option></select></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" id="aeg">Start Event</button><button class="btn red" id="aek">Stop</button></div></div>
   <div class="row" style="display:block"><b>📢 Announcement</b><input class="inp" id="amt" maxlength="100" placeholder="Message for everyone (10 seconds)"><button class="btn" id="amg" style="margin-top:10px">Send</button></div>`;
-  $('aes').onclick=async()=>{const n=+$('aon').value,u=+$('aou').value;if(!(n>0)||n*u>30*864e5)return toast('Check the time');try{await Admin.huge($('hg').value,n*u);toast('Huge Egg started!')}catch(e){toast('Failed: '+(e.code||e.message))}};
-  $('aex2').onclick=async()=>{try{await Admin.huge($('hg').value,0);toast('Huge Egg stopped')}catch(e){toast('Failed: '+(e.code||e.message))}};
+  $('aes').onclick=async()=>{const n=+$('aon').value,u=+$('aou').value;if(!(n>0)||n*u>30*864e5)return toast('Check the time');try{await Admin.huge($('hg').value,n*u,$('hk').value);toast(TIERS[$('hk').value].n+' Egg started!')}catch(e){toast('Failed: '+(e.code||e.message))}};
+  $('aex2').onclick=async()=>{try{await Admin.huge($('hg').value,0,$('hk').value);toast(TIERS[$('hk').value].n+' Egg stopped')}catch(e){toast('Failed: '+(e.code||e.message))}};
   $('aeg').onclick=async()=>{const m=+$('aex').value,n=+$('aen').value,u=+$('aeu').value;if(!(m>0&&m<=1000)||!(n>0)||n*u>30*864e5)return toast('Check multiplier and time');try{await Admin.startEvent($('aet').value,m,n*u);toast('Event started!')}catch(e){toast('Failed: '+(e.code||e.message))}};
   $('aek').onclick=async()=>{try{await Admin.stopEvent($('aet').value);toast('Event stopped')}catch(e){toast('Failed: '+(e.code||e.message))}};
   $('amg').onclick=async()=>{const t=$('amt').value.trim();if(!t)return toast('Write a message');try{await Admin.send(t);$('amt').value='';toast('Sent!')}catch(e){toast('Failed: '+(e.code||e.message))}}}
@@ -255,9 +268,9 @@ function render(){
   let h=`<div class="slots">${Array.from({length:slots()},(_,i)=>{const p=eq[i];return p?`<div class="slot r-${PETS[p.t].r} ${S.sel.has(p.id)?'sel':''}" data-i="${p.id}"><span class="badge">${p.lock?'🔒':''}</span>${PETS[p.t].e}</div>`:'<div class="slot">➕</div>'}).join('')}</div>
   <div class="tools"><button class="btn" id="best">Equip Best</button><button class="btn ${S.multi?'orange':'blue'}" id="multi">Multi Delete: ${S.multi?'ON':'OFF'}</button><button class="btn" id="craftall" ${craftAllN()?'':'disabled'}>Craft All${craftAllN()?' ('+craftAllN()+')':''}</button>${S.multi?`<button class="btn red" id="delsel">Delete Selected (${sel.length})</button><button class="btn gray" id="all">Select All</button>`:''}</div>`;
   const inv=S.pets.filter(p=>!p.eq).sort(bySort);
-  h+=`<div class="grid">${inv.map(p=>`<div class="pet r-${PETS[p.t].r} ${S.sel.has(p.id)?'sel':''}" data-i="${p.id}"><span class="badge">${p.lock?'🔒':''}</span><div class="e">${PETS[p.t].e}</div><small><b>${pn(p)}</b></small><small>x${+pw(p).toFixed(2)}</small></div>`).join('')||'<p style="text-align:center">No pets in inventory.</p>'}</div>`;
+  h+=`<div class="grid">${inv.map(p=>`<div class="pet r-${PETS[p.t].r} ${p.titan?'ti':''} ${S.sel.has(p.id)?'sel':''}" data-i="${p.id}"><span class="badge">${p.lock?'🔒':''}</span><div class="e">${PETS[p.t].e}</div><small><b>${pn(p)}</b></small><small>x${+pw(p).toFixed(2)}</small></div>`).join('')||'<p style="text-align:center">No pets in inventory.</p>'}</div>`;
   if(!S.multi&&sel[0]){const p=sel[0],d=PETS[p.t];h+=`<div class="row" style="margin-top:12px;flex-wrap:wrap"><div class="ic">${d.e}</div><div class="tx"><b>${pn(p)}</b><small>${d.r} · +${+pw(p).toFixed(2)} multiplier</small></div>
-   <button class="btn" id="eqb">${p.eq?'Unequip':'Equip'}</button><button class="btn orange" id="lk">${p.lock?'Unlock':'Lock'}</button><button class="btn red" id="del">Delete</button><button class="btn blue" id="craft" ${p.huge||craftList(p).length<3?'disabled':''}>${p.huge?'MAX':'Craft ('+Math.min(craftList(p).length,3)+'/3)'}</button></div>`}
+   <button class="btn" id="eqb">${p.eq?'Unequip':'Equip'}</button><button class="btn orange" id="lk">${p.lock?'Unlock':'Lock'}</button><button class="btn red" id="del">Delete</button><button class="btn blue" id="craft" ${p.titan||craftList(p).length<3?'disabled':''}>${p.titan?'MAX':(p.huge?'Titanic ':'')+'Craft ('+Math.min(craftList(p).length,3)+'/3)'}</button></div>`}
   pb.innerHTML=h;
   pb.querySelectorAll('[data-i]').forEach(e=>e.onclick=()=>{const id=+e.dataset.i,p=S.pets.find(x=>x.id==id);if(S.multi){if(p.eq)return toast('Unequip it first!');S.sel.has(id)?S.sel.delete(id):S.sel.add(id)}else{S.sel.clear();S.sel.add(id)}render()});
   const g=id=>pb.querySelector('#'+id);
@@ -265,23 +278,26 @@ function render(){
   g('multi').onclick=()=>{S.multi=!S.multi;S.sel.clear();render()};
   g('craftall').onclick=()=>{const gr=craftGroups();let n=0;for(const t in gr){const k=Math.floor(gr[t].length/3);if(!k)continue;const use=gr[t].slice(0,k*3);S.pets=S.pets.filter(x=>!use.includes(x));for(let i=0;i<k;i++)S.pets.push({id:S.uid++,t,huge:true,lock:false,eq:false});n+=k}if(!n)return toast('Nothing to craft!');S.sel.clear();sfx('epic');toast('Crafted '+n+' Huge pet'+(n>1?'s':'')+'!');render()};
   if(g('all'))g('all').onclick=()=>{S.pets.filter(p=>!p.eq).forEach(p=>S.sel.add(p.id));render()};
-  if(g('delsel'))g('delsel').onclick=()=>{const bad=sel.filter(p=>p.lock).length,ok=sel.filter(p=>!p.lock);const go=()=>{S.pets=S.pets.filter(p=>!ok.includes(p));S.sel.clear();if(bad)toast(`${bad} locked pets were kept`);render()};ok.some(p=>p.huge||PETS[p.t].r=='Secret')?ask('Your selection has a Secret or Huge pet. Delete anyway?',go):go()};
+  if(g('delsel'))g('delsel').onclick=()=>{const bad=sel.filter(p=>p.lock).length,ok=sel.filter(p=>!p.lock);const go=()=>{S.pets=S.pets.filter(p=>!ok.includes(p));S.sel.clear();if(bad)toast(`${bad} locked pets were kept`);render()};ok.some(p=>p.huge||p.titan||PETS[p.t].r=='Secret')?ask('Your selection has a Secret, Huge or Titanic pet. Delete anyway?',go):go()};
   if(g('eqb'))g('eqb').onclick=()=>{const p=sel[0];if(p.eq)p.eq=false;else{if(eq.length>=slots()){sfx('err');return toast('All slots are full!')}p.eq=true}S.sel.clear();sfx('click');render()};
   if(g('lk'))g('lk').onclick=()=>{sel[0].lock=!sel[0].lock;render()};
-  if(g('del'))g('del').onclick=()=>{const p=sel[0];if(p.lock)return toast('Pet is locked!');if(p.eq)return toast('Unequip it first!');const go=()=>{S.pets=S.pets.filter(x=>x!=p);S.sel.clear();render()};(p.huge||PETS[p.t].r=='Secret')?ask('Delete '+pn(p)+'? This cannot be undone.',go):go()}
-  if(g('craft'))g('craft').onclick=()=>{const p=sel[0],l=craftList(p);if(l.length<3)return;const use=[p,...l.filter(x=>x!=p)].slice(0,3);S.pets=S.pets.filter(x=>!use.includes(x));S.pets.push({id:S.uid++,t:p.t,huge:true,lock:false,eq:false});S.sel.clear();sfx('epic');toast('Crafted Huge '+PETS[p.t].n+'!');render()}}
+  if(g('del'))g('del').onclick=()=>{const p=sel[0];if(p.lock)return toast('Pet is locked!');if(p.eq)return toast('Unequip it first!');const go=()=>{S.pets=S.pets.filter(x=>x!=p);S.sel.clear();render()};(p.huge||p.titan||PETS[p.t].r=='Secret')?ask('Delete '+pn(p)+'? This cannot be undone.',go):go()}
+  if(g('craft'))g('craft').onclick=()=>{const p=sel[0],l=craftList(p);if(l.length<3)return;const use=[p,...l.filter(x=>x!=p)].slice(0,3);S.pets=S.pets.filter(x=>!use.includes(x));const nk=p.huge?'titan':'huge';S.pets.push({id:S.uid++,t:p.t,[nk]:true,lock:false,eq:false});S.sel.clear();sfx('epic');toast('Crafted '+TIERS[nk].n+' '+PETS[p.t].n+'!');render()}}
 }
-window.Game={save:()=>({coins:S.coins,world:S.world,unlocked:S.unlocked,up:S.up,pets:S.pets,uid:S.uid,autoClick:S.autoClick,autoDel:S.autoDel,autoDelH:S.autoDelH}),
- load:d=>{S.coins=d.coins||0;S.world=EGGS[d.world]?d.world:'spawn';S.unlocked=Object.assign({spawn:1},d.unlocked);S.up=Object.assign({clicks:0,luck:0,equips:0,storage:0,auto:0,hatch:0},d.up);S.pets=(d.pets||[]).filter(p=>PETS[p.t]);S.uid=d.uid||(1+S.pets.reduce((m,p)=>Math.max(m,p.id),0));S.autoClick=d.autoClick!==false;S.autoDel=d.autoDel||{};S.autoDelH=d.autoDelH||{};S.in=true;ui()}};
+window.Game={save:()=>({coins:S.coins,world:S.world,unlocked:S.unlocked,up:S.up,pets:S.pets,uid:S.uid,autoClick:S.autoClick,autoDel:S.autoDel,autoDelH:S.autoDelH,autoDelT:S.autoDelT}),
+ load:d=>{S.coins=d.coins||0;S.world=EGGS[d.world]?d.world:'spawn';S.unlocked=Object.assign({spawn:1},d.unlocked);S.up=Object.assign({clicks:0,luck:0,equips:0,storage:0,auto:0,hatch:0},d.up);S.pets=(d.pets||[]).filter(p=>PETS[p.t]);S.uid=d.uid||(1+S.pets.reduce((m,p)=>Math.max(m,p.id),0));S.autoClick=d.autoClick!==false;S.autoDel=d.autoDel||{};S.autoDelH=d.autoDelH||{};S.autoDelT=d.autoDelT||{};S.in=true;ui()}};
 const EVI={coins:'🪙',luck:'🍀',speed:'⚡'};let evKey='';
-function hugeOn(){return !!(S.huge&&S.huge.end>Date.now()&&S.huge.egg===S.world)}
+function tierOn(k){const x=S.tier[k];return !!(x&&x.end>Date.now()&&x.egg===S.world)}
 function evm(k){const e=S.ev[k];return e&&e.end>Date.now()?e.m:1}
 function tf(s){const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return (d?d+'d ':'')+(h?h+'h ':'')+(m?m+'m ':'')+(s%60)+'s'}
+const UPD=new Date('2026-11-09T15:00:00+01:00').getTime();
+function cd(s){const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),p=[];if(d)p.push(d+'d');if(d||h)p.push(h+'h');if(d||h||m)p.push(m+'m');p.push(s%60+'s');return p.join(' ')}
 function tick(){const now=Date.now();let h='',key='';for(const k of ['coins','luck','speed']){const e=S.ev[k];if(e&&e.end>now){h+=`<div class="pill" style="font-size:16px;background:#ffe27a;color:#4a2b00">x${e.m} ${EVI[k]}: ${tf(Math.ceil((e.end-now)/1000))}</div>`;key+=k+e.m+e.end}}
- if(S.huge&&S.huge.end>now&&EGGS[S.huge.egg])h+=`<div class="pill" style="font-size:16px;background:#ffe27a;color:#4a2b00">Huge ${EGGS[S.huge.egg].e}: ${tf(Math.ceil((S.huge.end-now)/1000))}</div>`;
- key+='h'+hugeOn()+(S.huge?S.huge.end:0);$('evs').innerHTML=h;if(key!==evKey){evKey=key;ui()}}
+ for(const k in TIERS){const x=S.tier[k];if(x&&x.end>now&&EGGS[x.egg])h+=`<div class="pill" style="font-size:16px;background:#ffe27a;color:#4a2b00">${TIERS[k].n} ${EGGS[x.egg].e}: ${tf(Math.ceil((x.end-now)/1000))}</div>`;key+=k+tierOn(k)+(x?x.end:0)}
+ {const r=Math.ceil((UPD-now)/1000);$('updt').textContent=r>0?cd(r):'Live now! 🎉'}
+ $('evs').innerHTML=h;if(key!==evKey){evKey=key;ui()}}
 Game.setEvents=d=>{S.ev={};for(const k of ['coins','luck','speed'])if(d[k]&&d[k].end>Date.now())S.ev[k]={m:+d[k].m,end:+d[k].end};tick()};
-Game.setHuge=d=>{S.huge=d&&d.end>Date.now()?{egg:d.egg,end:+d.end}:null;tick();ui()};
+Game.setTier=(k,d)=>{S.tier[k]=d&&d.end>Date.now()?{egg:d.egg,end:+d.end}:null;tick();ui()};Game.setHuge=d=>Game.setTier('huge',d);Game.setTitan=d=>Game.setTier('titan',d);
 Game.announce=(f,t)=>toast(f+': '+String(t).slice(0,100),10000,'ann');
 setInterval(tick,500);
 $('adminBtn').onclick=()=>open('admin');
@@ -293,14 +309,16 @@ const firebaseConfig={apiKey:"AIzaSyAZCGWB4iQCJM_l85pb-hCuX-KtT7dIb7U",authDomai
 /* ================================================================================== */
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged,updateProfile} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore,doc,getDoc,setDoc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,doc,getDoc,setDoc,onSnapshot,collection,query,orderBy,limit,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const $=id=>document.getElementById(id),err=t=>$('lerr').textContent=t;
 if(firebaseConfig.apiKey.startsWith('PASTE')){err('Firebase is not configured yet. Paste your config in the file.')}
 else{
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 let user=null,lastJson='',evSub=0;
 const evDoc=()=>doc(db,'events','live');
-window.Admin={startEvent:(t,m,ms)=>setDoc(evDoc(),{[t]:{m,end:Date.now()+ms}},{merge:true}),stopEvent:t=>setDoc(evDoc(),{[t]:{m:1,end:0}},{merge:true}),huge:(egg,ms)=>setDoc(doc(db,'events','huge'),{egg,end:ms?Date.now()+ms:0}),send:text=>{const n=Date.now();return setDoc(doc(db,'events','msg'),{text,from:'overrguy',sent:n,id:n})}};
+window.Admin={startEvent:(t,m,ms)=>setDoc(evDoc(),{[t]:{m,end:Date.now()+ms}},{merge:true}),stopEvent:t=>setDoc(evDoc(),{[t]:{m:1,end:0}},{merge:true}),huge:(egg,ms,kind)=>setDoc(doc(db,'events',kind==='titan'?'titan':'huge'),{egg,end:ms?Date.now()+ms:0}),send:text=>{const n=Date.now();return setDoc(doc(db,'events','msg'),{text,from:'overrguy',sent:n,id:n})}};
+Game.pushLB=async()=>{if(!user||!Game.ready)return;try{await setDoc(doc(db,'leaderboard',user.uid),{nick:user.displayName||user.email.split('@')[0],coins:Math.floor(Game.save().coins)})}catch(e){}};
+window.LB={fetch:async()=>{await Game.pushLB();const sn=await getDocs(query(collection(db,'leaderboard'),orderBy('coins','desc'),limit(100)));return sn.docs.map(d=>d.data())}};
 const mail=n=>n.toLowerCase()+'@coinclicker.game', pwd=p=>'cc!'+p+'!game';
 function check(reg){if(!reg){const n=$('lnick').value.trim(),p=$('lpass').value;if(!n||!p){err('Enter your nickname and password.');return null}err('');return [n,p]}const n=$('lnick').value.trim(),p=$('lpass').value;
  if(!/^[A-Za-z0-9_-]{3,20}$/.test(n)){err('Nickname: 3-20 characters (letters, numbers, _ or -).');return null}
@@ -313,7 +331,7 @@ let regMode=false;
 const setMode=r=>{regMode=r;$('lnick').placeholder=r?'Nickname (3-20)':'Nickname';$('lpass').placeholder=r?'Password (3-50)':'Password';$('ltab1').className='btn '+(r?'gray':'');$('ltab2').className='btn '+(r?'':'gray');$('lgo').textContent=r?'Register':'Log in';err('')};
 $('ltab1').onclick=()=>setMode(false);$('ltab2').onclick=()=>setMode(true);$('lgo').onclick=()=>regMode?doReg():doLogin();
 ['lnick','lpass'].forEach(i=>$(i).addEventListener('keydown',e=>{if(e.key=='Enter')$('lgo').click()}));
-async function saveNow(){if(!user||!Game.ready)return;const d=Game.save(),j=JSON.stringify(d);if(j===lastJson)return;lastJson=j;try{await setDoc(doc(db,'users',user.uid),d)}catch(e){lastJson=''}}
+async function saveNow(){if(!user||!Game.ready)return;const d=Game.save(),j=JSON.stringify(d);if(j===lastJson)return;lastJson=j;try{await setDoc(doc(db,'users',user.uid),d);Game.pushLB()}catch(e){lastJson=''}}
 onAuthStateChanged(auth,async u=>{
  if(!u){user=null;$('login').style.display='flex';return}
  user=u;$('nick').textContent=u.displayName||u.email.split('@')[0];
@@ -321,7 +339,7 @@ onAuthStateChanged(auth,async u=>{
  catch(e){err('Could not load your save: '+e.code);await signOut(auth);return}
  $('login').style.display='none';$('lpass').value='';
  if(u.email.split('@')[0]==='overrguy')$('adminBtn').style.display='';
- if(!evSub){evSub=1;onSnapshot(evDoc(),sn=>Game.setEvents(sn.exists()?sn.data():{}),()=>{});onSnapshot(doc(db,'events','huge'),sn=>Game.setHuge(sn.exists()?sn.data():null),()=>{});let lastMsg=0;onSnapshot(doc(db,'events','msg'),sn=>{if(!sn.exists())return;const d=sn.data();if(d.id===lastMsg)return;lastMsg=d.id;if(Math.abs(Date.now()-d.sent)<20000)Game.announce(d.from,d.text)},()=>{})}});
+ if(!evSub){evSub=1;onSnapshot(evDoc(),sn=>Game.setEvents(sn.exists()?sn.data():{}),()=>{});onSnapshot(doc(db,'events','huge'),sn=>Game.setHuge(sn.exists()?sn.data():null),()=>{});onSnapshot(doc(db,'events','titan'),sn=>Game.setTitan(sn.exists()?sn.data():null),()=>{});let lastMsg=0;onSnapshot(doc(db,'events','msg'),sn=>{if(!sn.exists())return;const d=sn.data();if(d.id===lastMsg)return;lastMsg=d.id;if(Math.abs(Date.now()-d.sent)<20000)Game.announce(d.from,d.text)},()=>{})}});
 setInterval(saveNow,15000);
 addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 $('logout').onclick=async()=>{await saveNow();await signOut(auth);location.reload()};
