@@ -91,7 +91,7 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
 .adl{position:relative;font-weight:700;font-size:18px;margin-top:8px}
 .erow{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
 .eic{font-size:84px;line-height:1.1;animation:bob 2s ease-in-out infinite}
-.r-Legendary{background:#ffe08a;color:#6b4a00}.pet.ti{box-shadow:0 0 0 3px #ffc928,0 0 14px #ffc928}.row.me{outline:3px solid #3b8dff}
+.r-Legendary{background:#ffe08a;color:#6b4a00}.row.me{outline:3px solid #3b8dff}
 #upd{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:5;background:var(--surface);border-radius:18px;padding:6px 14px;font-weight:700;font-size:14px;line-height:1.35;box-shadow:0 4px 0 rgba(0,0,0,.2);pointer-events:none}
 @media (max-width:700px){#dock{padding-bottom:74px}}
 </style></head>
@@ -147,7 +147,7 @@ const UP={
  auto:{n:'Auto Clicker Speed',e:'🤖',max:12,cost:l=>Math.round(200*Math.pow(1.8,l)),d:l=>`${autoRate(l)} auto clicks / sec`},
  hatch:{n:'Hatch Speed',e:'⚡',max:8,cost:l=>Math.round(300*Math.pow(2.6,l)),d:l=>`Hatch takes ${(hatchTime(l)/1000).toFixed(1)}s`}};
 const S={coins:0,world:'spawn',unlocked:{spawn:1},up:{clicks:0,luck:0,equips:0,storage:0,auto:0,hatch:0},pets:[],uid:1,auto:'',autoClick:true,busy:false,in:false,autoDel:{},autoDelH:{},autoDelT:{},ev:{},tier:{huge:null,titan:null},sel:new Set(),multi:false};
-let LBdata=null,LBerr='',autoWait=0,panel=null,autoAcc=0,music=true,sound=true;
+let LBdata=null,LBerr='',LBmode='coins',autoWait=0,panel=null,autoAcc=0,music=true,sound=true;
 const slots=()=>3+S.up.equips, cap=()=>STORAGE[S.up.storage];
 const equipped=()=>S.pets.filter(p=>p.eq);
 const pw=p=>PETS[p.t].p*(p.titan?TIERS.titan.m:p.huge?TIERS.huge.m:1), pn=p=>(p.titan?'Titanic ':p.huge?'Huge ':'')+PETS[p.t].n;
@@ -229,10 +229,12 @@ function ui(){
  $('tiers').querySelectorAll('[data-t]').forEach(e=>e.onclick=()=>{const t=e.dataset.t,m=adMap(e.dataset.k);if(PETS[t].r=='Secret')return toast('Secret pets can’t be auto deleted');m[t]=!m[t];ui()})
 }
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function lbHtml(){if(LBerr)return `<p style="text-align:center">Leaderboard unavailable (${esc(LBerr)})</p>`;if(!LBdata)return '<p style="text-align:center">Loading…</p>';const me=$('nick').textContent;
- return `<div style="font-size:12px;opacity:.7;text-align:center;margin-bottom:8px">Top 100 · refreshes every 10s</div>`+(LBdata.map((u,i)=>`<div class="row ${u.nick===me?'me':''}" style="padding:8px 14px;margin-bottom:6px"><b style="min-width:42px;font-size:20px">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</b><div class="tx"><b>${esc(u.nick)}</b></div><b>🪙 ${fmt(+u.coins||0)}</b></div>`).join('')||'<p style="text-align:center">No players yet.</p>')}
-function loadLB(){if(!window.LB){LBerr='not ready';if(panel=='lb')$('pb').innerHTML=lbHtml();return}
- LB.fetch().then(d=>{LBdata=d;LBerr=''}).catch(e=>{LBerr=e.code||e.message}).then(()=>{if(panel=='lb')$('pb').innerHTML=lbHtml()})}
+function lbHtml(){const tabs=`<div style="display:flex;gap:8px;justify-content:center;margin-bottom:10px"><button class="btn ${LBmode=='coins'?'orange':'gray'}" onclick="setLB('coins')">🪙 Coins</button><button class="btn ${LBmode=='power'?'orange':'gray'}" onclick="setLB('power')">🐾 Pet Power</button></div>`;
+ if(LBerr)return tabs+`<p style="text-align:center">Leaderboard unavailable (${esc(LBerr)})</p>`;if(!LBdata)return tabs+'<p style="text-align:center">Loading…</p>';const me=$('nick').textContent;
+ return tabs+`<div style="font-size:12px;opacity:.7;text-align:center;margin-bottom:8px">Top 100 · refreshes every 10s${LBmode=='power'?' · all pets in inventory count':''}</div>`+(LBdata.map((u,i)=>`<div class="row ${u.nick===me?'me':''}" style="padding:8px 14px;margin-bottom:6px"><b style="min-width:42px;font-size:20px">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</b><div class="tx"><b>${esc(u.nick)}</b></div><b>${LBmode=='power'?'🐾 x'+fmtD(+u.power||0):'🪙 '+fmt(+u.coins||0)}</b></div>`).join('')||'<p style="text-align:center">No players yet.</p>')}
+function setLB(m){if(LBmode==m)return;LBmode=m;LBdata=null;LBerr='';if(panel=='lb')$('pb').innerHTML=lbHtml();loadLB()}
+function loadLB(){const m=LBmode;if(!window.LB){LBerr='not ready';if(panel=='lb')$('pb').innerHTML=lbHtml();return}
+ LB.fetch(m).then(d=>{if(m==LBmode){LBdata=d;LBerr=''}}).catch(e=>{if(m==LBmode)LBerr=e.code||e.message}).then(()=>{if(m==LBmode&&panel=='lb')$('pb').innerHTML=lbHtml()})}
 setInterval(()=>{if(panel=='lb')loadLB()},10000);
 function open(p){panel=p;$('modal').className='show';S.sel.clear();S.multi=false;if(p=='lb'){LBdata=null;LBerr='';loadLB()}render()}
 function shut(){panel=null;$('modal').className=''}
@@ -241,7 +243,7 @@ document.querySelectorAll('#dock .btn').forEach(b=>b.onclick=()=>open(b.dataset.
 function render(){
  const pb=$('pb');ui();
  if(panel=='tp'){$('pt').textContent='🌀 Teleport';
-  pb.innerHTML=Object.entries(WORLDS).map(([k,w])=>{const un=S.unlocked[k];return `<div class="row"><div class="ic">${w.e}</div><div class="tx"><b>${w.n}</b><small>${EGGS[k].n} lives here${un?'':' · Cost 🪙 '+fmt(w.cost)}</small></div>
+  pb.innerHTML=Object.entries(WORLDS).map(([k,w])=>{const un=S.unlocked[k];return `<div class="row"><div class="ic">${w.e}</div><div class="tx"><b>${w.n}</b>${un?'':'<small>Cost 🪙 '+fmt(w.cost)+'</small>'}</div>
    <button class="btn ${S.world==k?'gray':un?'':'orange'}" data-w="${k}" ${S.world==k?'disabled':''}>${S.world==k?'Here':un?'Teleport':'Unlock'}</button></div>`}).join('');
   pb.querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{const k=b.dataset.w,w=WORLDS[k];
    if(S.busy)return toast('Wait for the hatch to finish!');
@@ -297,6 +299,7 @@ function tick(){const now=Date.now();let h='',key='';for(const k of ['coins','lu
  {const r=Math.ceil((UPD-now)/1000);$('updt').textContent=r>0?cd(r):'Live now! 🎉'}
  $('evs').innerHTML=h;if(key!==evKey){evKey=key;ui()}}
 Game.setEvents=d=>{S.ev={};for(const k of ['coins','luck','speed'])if(d[k]&&d[k].end>Date.now())S.ev[k]={m:+d[k].m,end:+d[k].end};tick()};
+Game.power=()=>S.pets.reduce((a,p)=>a+pw(p),0);
 Game.setTier=(k,d)=>{S.tier[k]=d&&d.end>Date.now()?{egg:d.egg,end:+d.end}:null;tick();ui()};Game.setHuge=d=>Game.setTier('huge',d);Game.setTitan=d=>Game.setTier('titan',d);
 Game.announce=(f,t)=>toast(f+': '+String(t).slice(0,100),10000,'ann');
 setInterval(tick,500);
@@ -317,8 +320,8 @@ const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 let user=null,lastJson='',evSub=0;
 const evDoc=()=>doc(db,'events','live');
 window.Admin={startEvent:(t,m,ms)=>setDoc(evDoc(),{[t]:{m,end:Date.now()+ms}},{merge:true}),stopEvent:t=>setDoc(evDoc(),{[t]:{m:1,end:0}},{merge:true}),huge:(egg,ms,kind)=>setDoc(doc(db,'events',kind==='titan'?'titan':'huge'),{egg,end:ms?Date.now()+ms:0}),send:text=>{const n=Date.now();return setDoc(doc(db,'events','msg'),{text,from:'overrguy',sent:n,id:n})}};
-Game.pushLB=async()=>{if(!user||!Game.ready)return;try{await setDoc(doc(db,'leaderboard',user.uid),{nick:user.displayName||user.email.split('@')[0],coins:Math.floor(Game.save().coins)})}catch(e){}};
-window.LB={fetch:async()=>{await Game.pushLB();const sn=await getDocs(query(collection(db,'leaderboard'),orderBy('coins','desc'),limit(100)));return sn.docs.map(d=>d.data())}};
+Game.pushLB=async()=>{if(!user||!Game.ready)return;try{await setDoc(doc(db,'leaderboard',user.uid),{nick:user.displayName||user.email.split('@')[0],coins:Math.floor(Game.save().coins),power:Math.round(Game.power()*100)/100})}catch(e){}};
+window.LB={fetch:async(m)=>{await Game.pushLB();const sn=await getDocs(query(collection(db,'leaderboard'),orderBy(m=='power'?'power':'coins','desc'),limit(100)));return sn.docs.map(d=>d.data())}};
 const mail=n=>n.toLowerCase()+'@coinclicker.game', pwd=p=>'cc!'+p+'!game';
 function check(reg){if(!reg){const n=$('lnick').value.trim(),p=$('lpass').value;if(!n||!p){err('Enter your nickname and password.');return null}err('');return [n,p]}const n=$('lnick').value.trim(),p=$('lpass').value;
  if(!/^[A-Za-z0-9_-]{3,20}$/.test(n)){err('Nickname: 3-20 characters (letters, numbers, _ or -).');return null}
