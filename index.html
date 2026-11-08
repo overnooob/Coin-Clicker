@@ -9,7 +9,8 @@
 html,body{height:100%;margin:0}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
 body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color:var(--ink);overflow:hidden}
-#game{height:100%;display:flex;flex-direction:column;background-color:#2f8cff;background-image:linear-gradient(45deg,#4aa0ff 25%,transparent 25%,transparent 75%,#4aa0ff 75%),linear-gradient(45deg,#4aa0ff 25%,transparent 25%,transparent 75%,#4aa0ff 75%);background-size:80px 80px;background-position:0 0,40px 40px}
+#game{--bg1:#3aa655;--bg2:#55c070;height:100%;display:flex;flex-direction:column;background-color:var(--bg1);background-image:linear-gradient(45deg,var(--bg2) 25%,transparent 25%,transparent 75%,var(--bg2) 75%),linear-gradient(45deg,var(--bg2) 25%,transparent 25%,transparent 75%,var(--bg2) 75%);background-size:80px 80px;background-position:0 0,40px 40px}
+#game[data-world=candy]{--bg1:#ff7ac8;--bg2:#ff9fd8}#game[data-world=lava]{--bg1:#ff8a1f;--bg2:#ffa84d}
 #top{display:flex;justify-content:center;align-items:center;padding:12px;gap:10px;flex-wrap:wrap}
 .pill{background:var(--surface);border-radius:30px;padding:8px 18px;font-weight:700;font-size:22px;box-shadow:0 5px 0 rgba(0,0,0,.2)}
 .sq{width:48px;height:48px;border-radius:16px;border:none;font-size:24px;cursor:pointer;background:var(--surface);box-shadow:0 5px 0 rgba(0,0,0,.2)}
@@ -215,7 +216,7 @@ setInterval(()=>{if(S.busy||panel||Date.now()<autoWait)return;if(S.auto=='n')hat
 $('ov').onclick=()=>{};
 function ui(){
  const egg=EGGS[S.world];if(S.auto&&S.auto!='n'&&!tierOn(S.auto))S.auto='';
- $('world').textContent=WORLDS[S.world].e+' '+WORLDS[S.world].n;
+ $('world').textContent=WORLDS[S.world].e+' '+WORLDS[S.world].n;$('game').dataset.world=S.world;
  $('coins').textContent='🪙 '+fmt(S.coins);
  $('eggName').textContent=egg.n;$('eggIcon').textContent=egg.e;
  $('hatch').textContent=`Hatch 🪙 ${fmt(egg.cost)}`;
