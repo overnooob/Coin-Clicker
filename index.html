@@ -97,7 +97,7 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
 </style></head>
 <body>
 <div id="game">
- <div id="bar"><div id="top"><button class="sq" id="snd" title="Sound">🔊</button><div class="pill" id="coins"></div><div class="pill" id="world" style="font-size:18px"></div></div><div id="acct"><button class="btn orange" id="adminBtn" style="display:none;padding:8px 14px;font-size:15px">🛡️Admin</button><span class="pill" id="nick" style="font-size:16px"></span><button class="btn red" id="logout" style="padding:8px 14px;font-size:15px">Log out</button></div></div>
+ <div id="bar"><div id="top"><button class="sq" id="snd" title="Sound">🔊</button><div class="pill" id="coins"></div><div class="pill" id="world" style="font-size:18px"></div></div><div id="acct"><button class="btn orange" id="adminBtn" style="display:none;padding:8px 14px;font-size:15px">🛡️Admin</button><button class="btn" id="chatBtn" style="padding:8px 14px;font-size:15px">💬 Chat</button><button class="btn blue" id="lbBtn" style="padding:8px 14px;font-size:15px">🏆 Leaderboard</button><span class="pill" id="nick" style="font-size:16px"></span><button class="btn red" id="logout" style="padding:8px 14px;font-size:15px">Log out</button></div></div>
  <div id="evs" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"></div>
  <div id="main">
   <div id="coinWrap"><button id="coin" aria-label="Click the coin">🪙</button><div><button class="btn" id="autoBtn"></button></div></div>
@@ -112,7 +112,6 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
   <button class="btn blue" data-p="tp">🌀 Teleport</button>
   <button class="btn orange" data-p="up">⬆️ Upgrades</button>
   <button class="btn red" data-p="inv">🎒 Pets</button>
-  <button class="btn" data-p="lb">🏆 Leaderboard</button>
  </div>
 </div>
 <div id="modal"><div id="panel"><div id="ph"><span id="pt"></span><button class="btn red" id="close">✕</button></div><div id="pb"></div></div></div>
@@ -147,7 +146,7 @@ const UP={
  auto:{n:'Auto Clicker Speed',e:'🤖',max:12,cost:l=>Math.round(200*Math.pow(1.8,l)),d:l=>`${autoRate(l)} auto clicks / sec`},
  hatch:{n:'Hatch Speed',e:'⚡',max:8,cost:l=>Math.round(300*Math.pow(2.6,l)),d:l=>`Hatch takes ${(hatchTime(l)/1000).toFixed(1)}s`}};
 const S={coins:0,world:'spawn',unlocked:{spawn:1},up:{clicks:0,luck:0,equips:0,storage:0,auto:0,hatch:0},pets:[],uid:1,auto:'',autoClick:true,busy:false,in:false,autoDel:{},autoDelH:{},autoDelT:{},ev:{},tier:{huge:null,titan:null},sel:new Set(),multi:false};
-let LBdata=null,LBerr='',LBmode='coins',autoWait=0,panel=null,autoAcc=0,music=true,sound=true;
+let chatData=[],chatInit=false,chatSeen=0,chatLast=0,LBdata=null,LBerr='',LBmode='coins',autoWait=0,panel=null,autoAcc=0,music=true,sound=true;
 const slots=()=>3+S.up.equips, cap=()=>STORAGE[S.up.storage];
 const equipped=()=>S.pets.filter(p=>p.eq);
 const pw=p=>PETS[p.t].p*(p.titan?TIERS.titan.m:p.huge?TIERS.huge.m:1), pn=p=>(p.titan?'Titanic ':p.huge?'Huge ':'')+PETS[p.t].n;
@@ -204,7 +203,7 @@ function hatch(silent,tier){
    clearInterval(st);oe.style.display='none';
    res.querySelector('.big').textContent=p.e;res.querySelector('.nm').textContent=(T?T.n+' ':'')+p.n;
    const b=res.querySelector('.pill');b.textContent=p.r+' · x'+(T?+(p.p*T.m).toFixed(2):p.p);res.querySelector('.adl').textContent=del?'🗑️ Auto Deleted':'';b.className='pill r-'+p.r;
-   res.className='show';sfx(RC[p.r]>=3?'epic':'pop');
+   res.className='show';sfx(RC[p.r]>=3?'epic':'pop');if(sec&&window.Chat)Chat.secret('WOW! '+$('nick').textContent+' just hatched a Secret '+(T?T.n+' ':'')+p.n+'!');
    setTimeout(()=>{$('ov').className='';res.className='';S.busy=false;autoWait=Date.now()+1500;ui();if(panel=='inv')render()},sec?2600:S.auto?1000:1700)
   },d)},520);
  return true}
@@ -231,11 +230,17 @@ function ui(){
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function lbHtml(){const tabs=`<div style="display:flex;gap:8px;justify-content:center;margin-bottom:10px"><button class="btn ${LBmode=='coins'?'orange':'gray'}" onclick="setLB('coins')">🪙 Coins</button><button class="btn ${LBmode=='power'?'orange':'gray'}" onclick="setLB('power')">🐾 Pet Power</button></div>`;
  if(LBerr)return tabs+`<p style="text-align:center">Leaderboard unavailable (${esc(LBerr)})</p>`;if(!LBdata)return tabs+'<p style="text-align:center">Loading…</p>';const me=$('nick').textContent;
- return tabs+`<div style="font-size:12px;opacity:.7;text-align:center;margin-bottom:8px">Top 100 · refreshes every 10s${LBmode=='power'?' · all pets in inventory count':''}</div>`+(LBdata.map((u,i)=>`<div class="row ${u.nick===me?'me':''}" style="padding:8px 14px;margin-bottom:6px"><b style="min-width:42px;font-size:20px">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</b><div class="tx"><b>${esc(u.nick)}</b></div><b>${LBmode=='power'?'🐾 x'+fmtD(+u.power||0):'🪙 '+fmt(+u.coins||0)}</b></div>`).join('')||'<p style="text-align:center">No players yet.</p>')}
+ return tabs+`<div style="font-size:12px;opacity:.7;text-align:center;margin-bottom:8px">Top 100 · refreshes every 10s</div>`+(LBdata.map((u,i)=>`<div class="row ${u.nick===me?'me':''}" style="padding:8px 14px;margin-bottom:6px"><b style="min-width:42px;font-size:20px">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</b><div class="tx"><b>${esc(u.nick)}</b></div><b>${LBmode=='power'?'🐾 x'+fmtD(+u.power||0):'🪙 '+fmt(+u.coins||0)}</b></div>`).join('')||'<p style="text-align:center">No players yet.</p>')}
 function setLB(m){if(LBmode==m)return;LBmode=m;LBdata=null;LBerr='';if(panel=='lb')$('pb').innerHTML=lbHtml();loadLB()}
 function loadLB(){const m=LBmode;if(!window.LB){LBerr='not ready';if(panel=='lb')$('pb').innerHTML=lbHtml();return}
  LB.fetch(m).then(d=>{if(m==LBmode){LBdata=d;LBerr=''}}).catch(e=>{if(m==LBmode)LBerr=e.code||e.message}).then(()=>{if(m==LBmode&&panel=='lb')$('pb').innerHTML=lbHtml()})}
 setInterval(()=>{if(panel=='lb')loadLB()},10000);
+function chatHtml(){return chatData.map(m=>m.type=='secret'?`<div class="r-Secret" style="border-radius:12px;padding:6px 10px;margin-bottom:6px;font-weight:700;word-break:break-word">${esc(m.text)}</div>`:`<div style="margin-bottom:6px;word-break:break-word"><b>${esc(m.nick)}:</b> ${esc(m.text)}</div>`).join('')||'<p style="text-align:center;opacity:.7">No messages yet.</p>'}
+function chatUpd(){const last=chatData.length?chatData[chatData.length-1].t:0;if(panel=='chat')chatSeen=last;
+ $('chatBtn').textContent='💬 Chat'+(last>chatSeen?' 🔴':'');
+ const el=$('cmsgs');if(el){const bot=el.scrollHeight-el.scrollTop-el.clientHeight<60;el.innerHTML=chatHtml();if(bot)el.scrollTop=el.scrollHeight}}
+function setChat(d){chatData=d;if(!chatInit){chatInit=true;chatSeen=d.length?d[d.length-1].t:0}chatUpd()}
+function chatSend(){const v=$('cin').value.trim();if(!v)return;if(Date.now()-chatLast<1200)return toast('Slow down!');if(!window.Chat)return toast('Chat not ready');chatLast=Date.now();$('cin').value='';Chat.send(v.slice(0,150)).catch(e=>toast('Chat failed: '+(e.code||e.message)))}
 function open(p){panel=p;$('modal').className='show';S.sel.clear();S.multi=false;if(p=='lb'){LBdata=null;LBerr='';loadLB()}render()}
 function shut(){panel=null;$('modal').className=''}
 $('close').onclick=shut;$('modal').onclick=e=>{if(e.target.id=='modal')shut()};
@@ -255,6 +260,8 @@ function render(){
   pb.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{const k=b.dataset.u,u=UP[k],l=S.up[k];
    if(l>=u.max)return;const c=u.cost(l);if(S.coins<c){sfx('err');return toast('Not enough coins!')}add(-c);S.up[k]++;sfx('buy');render()})}
  else if(panel=='lb'){$('pt').textContent='🏆 Leaderboard';pb.innerHTML=lbHtml()}
+ else if(panel=='chat'){$('pt').textContent='💬 Global Chat';pb.innerHTML=`<div id="cmsgs" style="height:min(46vh,340px);overflow:auto;margin-bottom:10px">${chatHtml()}</div><div style="display:flex;gap:8px;align-items:center"><input class="inp" id="cin" maxlength="150" placeholder="Write a message…" autocomplete="off" style="margin-top:0"><button class="btn" id="csend">Send</button></div>`;
+  $('csend').onclick=chatSend;$('cin').addEventListener('keydown',e=>{if(e.key=='Enter')chatSend()});const el=$('cmsgs');el.scrollTop=el.scrollHeight;chatUpd()}
  else if(panel=='admin'){$('pt').textContent='🛡️ Admin';
   pb.innerHTML=`<div class="row" style="display:block"><b>🥚 Huge / Titanic Egg</b><select class="inp" id="hk"><option value="huge">Huge</option><option value="titan">Titanic</option></select><select class="inp" id="hg">${Object.entries(EGGS).map(([k,e])=>`<option value="${k}">${e.n}</option>`).join('')}</select><div style="display:flex;gap:6px"><input class="inp" id="aon" type="number" min="1" value="5" style="flex:1"><select class="inp" id="aou" style="flex:1"><option value="60000">minutes</option><option value="3600000">hours</option><option value="86400000">days</option></select></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn orange" id="aes">Spawn</button><button class="btn red" id="aex2">Stop</button></div></div>
   <div class="row" style="display:block"><b>🎉 Event</b><select class="inp" id="aet"><option value="coins">🪙 Coins</option><option value="luck">🍀 Luck</option><option value="speed">⚡ Hatch Speed</option></select><input class="inp" id="aex" type="number" step="0.1" min="1" value="1.2" placeholder="Multiplier (e.g. 1.2)"><div style="display:flex;gap:6px"><input class="inp" id="aen" type="number" min="1" value="5" style="flex:1"><select class="inp" id="aeu" style="flex:1"><option value="60000">minutes</option><option value="3600000">hours</option><option value="86400000">days</option></select></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" id="aeg">Start Event</button><button class="btn red" id="aek">Stop</button></div></div>
@@ -299,11 +306,12 @@ function tick(){const now=Date.now();let h='',key='';for(const k of ['coins','lu
  {const r=Math.ceil((UPD-now)/1000);$('updt').textContent=r>0?cd(r):'Live now! 🎉'}
  $('evs').innerHTML=h;if(key!==evKey){evKey=key;ui()}}
 Game.setEvents=d=>{S.ev={};for(const k of ['coins','luck','speed'])if(d[k]&&d[k].end>Date.now())S.ev[k]={m:+d[k].m,end:+d[k].end};tick()};
+Game.setChat=setChat;
 Game.power=()=>S.pets.reduce((a,p)=>a+pw(p),0);
 Game.setTier=(k,d)=>{S.tier[k]=d&&d.end>Date.now()?{egg:d.egg,end:+d.end}:null;tick();ui()};Game.setHuge=d=>Game.setTier('huge',d);Game.setTitan=d=>Game.setTier('titan',d);
 Game.announce=(f,t)=>toast(f+': '+String(t).slice(0,100),10000,'ann');
 setInterval(tick,500);
-$('adminBtn').onclick=()=>open('admin');
+$('adminBtn').onclick=()=>open('admin');$('chatBtn').onclick=()=>open('chat');$('lbBtn').onclick=()=>open('lb');
 ui();
 </script>
 <script type="module">
@@ -312,7 +320,7 @@ const firebaseConfig={apiKey:"AIzaSyAZCGWB4iQCJM_l85pb-hCuX-KtT7dIb7U",authDomai
 /* ================================================================================== */
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged,updateProfile} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore,doc,getDoc,setDoc,onSnapshot,collection,query,orderBy,limit,getDocs} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,doc,getDoc,setDoc,onSnapshot,collection,query,orderBy,limit,getDocs,addDoc} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const $=id=>document.getElementById(id),err=t=>$('lerr').textContent=t;
 if(firebaseConfig.apiKey.startsWith('PASTE')){err('Firebase is not configured yet. Paste your config in the file.')}
 else{
@@ -322,6 +330,8 @@ const evDoc=()=>doc(db,'events','live');
 window.Admin={startEvent:(t,m,ms)=>setDoc(evDoc(),{[t]:{m,end:Date.now()+ms}},{merge:true}),stopEvent:t=>setDoc(evDoc(),{[t]:{m:1,end:0}},{merge:true}),huge:(egg,ms,kind)=>setDoc(doc(db,'events',kind==='titan'?'titan':'huge'),{egg,end:ms?Date.now()+ms:0}),send:text=>{const n=Date.now();return setDoc(doc(db,'events','msg'),{text,from:'overrguy',sent:n,id:n})}};
 Game.pushLB=async()=>{if(!user||!Game.ready)return;try{await setDoc(doc(db,'leaderboard',user.uid),{nick:user.displayName||user.email.split('@')[0],coins:Math.floor(Game.save().coins),power:Math.round(Game.power()*100)/100})}catch(e){}};
 window.LB={fetch:async(m)=>{await Game.pushLB();const sn=await getDocs(query(collection(db,'leaderboard'),orderBy(m=='power'?'power':'coins','desc'),limit(100)));return sn.docs.map(d=>d.data())}};
+const chatAdd=(text,type)=>{if(!user)return Promise.reject({code:'not-signed-in'});return addDoc(collection(db,'chat'),{uid:user.uid,nick:user.displayName||user.email.split('@')[0],text,type,t:Date.now()})};
+window.Chat={send:t=>chatAdd(t,'msg'),secret:t=>chatAdd(t,'secret').catch(()=>{})};
 const mail=n=>n.toLowerCase()+'@coinclicker.game', pwd=p=>'cc!'+p+'!game';
 function check(reg){if(!reg){const n=$('lnick').value.trim(),p=$('lpass').value;if(!n||!p){err('Enter your nickname and password.');return null}err('');return [n,p]}const n=$('lnick').value.trim(),p=$('lpass').value;
  if(!/^[A-Za-z0-9_-]{3,20}$/.test(n)){err('Nickname: 3-20 characters (letters, numbers, _ or -).');return null}
@@ -342,7 +352,7 @@ onAuthStateChanged(auth,async u=>{
  catch(e){err('Could not load your save: '+e.code);await signOut(auth);return}
  $('login').style.display='none';$('lpass').value='';
  if(u.email.split('@')[0]==='overrguy')$('adminBtn').style.display='';
- if(!evSub){evSub=1;onSnapshot(evDoc(),sn=>Game.setEvents(sn.exists()?sn.data():{}),()=>{});onSnapshot(doc(db,'events','huge'),sn=>Game.setHuge(sn.exists()?sn.data():null),()=>{});onSnapshot(doc(db,'events','titan'),sn=>Game.setTitan(sn.exists()?sn.data():null),()=>{});let lastMsg=0;onSnapshot(doc(db,'events','msg'),sn=>{if(!sn.exists())return;const d=sn.data();if(d.id===lastMsg)return;lastMsg=d.id;if(Math.abs(Date.now()-d.sent)<20000)Game.announce(d.from,d.text)},()=>{})}});
+ if(!evSub){evSub=1;onSnapshot(evDoc(),sn=>Game.setEvents(sn.exists()?sn.data():{}),()=>{});onSnapshot(doc(db,'events','huge'),sn=>Game.setHuge(sn.exists()?sn.data():null),()=>{});onSnapshot(query(collection(db,'chat'),orderBy('t','desc'),limit(50)),sn=>Game.setChat(sn.docs.map(d=>d.data()).reverse()),()=>{});onSnapshot(doc(db,'events','titan'),sn=>Game.setTitan(sn.exists()?sn.data():null),()=>{});let lastMsg=0;onSnapshot(doc(db,'events','msg'),sn=>{if(!sn.exists())return;const d=sn.data();if(d.id===lastMsg)return;lastMsg=d.id;if(Math.abs(Date.now()-d.sent)<20000)Game.announce(d.from,d.text)},()=>{})}});
 setInterval(saveNow,15000);
 addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 $('logout').onclick=async()=>{await saveNow();await signOut(auth);location.reload()};
