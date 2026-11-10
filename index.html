@@ -153,7 +153,7 @@ const EGGS={
  lava:{n:'Magma Egg',e:'🔥',cost:40000,loot:[['lcat',55],['mdog',30],['fbun',13],['ldrg',1.98],['phx',.02]]},
  circus:{n:'Carnival Egg',e:'🎪',cost:400000,loot:[['gir',55],['bel',30],['cmon',13],['ccl',1.98],['jest',.02]]}};
 const WORLDS={spawn:{n:'Spawn',e:'🌳',cost:0},candy:{n:'Candy',e:'🍬',cost:4000},lava:{n:'Lava',e:'🌋',cost:100000},circus:{n:'Circus',e:'🎪',cost:1000000}};
-const TIERS={huge:{n:'Huge',m:1.3,cost:3},titan:{n:'Titanic',m:1.6,cost:8}};
+const TIERS={huge:{n:'Huge',m:1.3,cost:3},titan:{n:'Titanic',m:1.6,cost:6}};
 const STORAGE=[100,150,200,250,300,350,400];
 const hatchTime=l=>2600-l*200;
 const autoRate=l=>1+l*.5;
@@ -251,15 +251,16 @@ function hatch(silent,tier){
    setTimeout(()=>{$('ov').className='';res.className='';S.busy=false;autoWait=Date.now()+1500;ui();if(panel=='inv')render()},sec?2600:S.auto?1000:1700)
   },d)},520);
  return true}
-function hatch3(){
- const egg=EGGS[S.world],cost=egg.cost*3;
+function hatch3(tier){
+ const egg=EGGS[S.world],T=tier?TIERS[tier]:null,cost=egg.cost*3*(T?T.cost:1);
  if(!S.unlocked.lava)return toast('🔒 Unlock the Lava world to use x3 Hatch!');
  if(S.busy||!S.in)return false;
+ if(T&&!tierOn(tier))return false;
  if(S.pets.length+3>cap()){toast('Storage full!');return false}
  if(S.coins<cost){toast('Not enough coins!');sfx('err');return false}
  add(-cost);S.busy=true;sfx('buy');
- const ts=[roll(),roll(),roll()],ps=ts.map(t=>PETS[t]),dels=ts.map(t=>!!adMap()[t]),sec=ps.some(p=>p.r=='Secret');
- ts.forEach((t,i)=>{if(!dels[i])S.pets.push({id:S.uid++,t,lock:false,eq:false})});
+ const ts=[roll(),roll(),roll()],ps=ts.map(t=>PETS[t]),dels=ts.map(t=>!!adMap(tier)[t]),sec=ps.some(p=>p.r=='Secret');
+ ts.forEach((t,i)=>{if(!dels[i])S.pets.push({id:S.uid++,t,lock:false,eq:false,...(T?{[tier]:true}:{})})});
  const d=hatchTime(S.up.hatch)/evm('speed'),o3=$('o3'),res=$('res');
  const dur=ps.map(p=>d+(p.r=='Secret'?10000:0)),maxD=Math.max(...dur);
  res.className='';$('oe').style.display='none';$('ov').className='show';
@@ -270,9 +271,9 @@ function hatch3(){
   const st=setInterval(()=>sfx('shake'),160);
   slots.forEach((sl,i)=>setTimeout(()=>{
    const p=ps[i];
-   sl.innerHTML=`<div class="r3"><div class="rays"></div><div class="big">${p.e}</div><div class="nm">${p.n}</div><div class="pill r-${p.r}">${p.r} · x${p.p}</div><div class="adl">${dels[i]?'🗑️ Auto Deleted':''}</div></div>`;
+   sl.innerHTML=`<div class="r3"><div class="rays"></div><div class="big">${p.e}</div><div class="nm">${(T?T.n+' ':'')+p.n}</div><div class="pill r-${p.r}">${p.r} · x${T?+(p.p*T.m).toFixed(2):p.p}</div><div class="adl">${dels[i]?'🗑️ Auto Deleted':''}</div></div>`;
    sfx(RC[p.r]>=3?'epic':'pop');
-   if(p.r=='Secret'&&window.Chat)Chat.secret('WOW! '+$('nick').textContent+' just hatched a Secret '+p.n+'!');
+   if(p.r=='Secret'&&window.Chat)Chat.secret('WOW! '+$('nick').textContent+' just hatched a Secret '+(T?T.n+' ':'')+p.n+'!');
   },dur[i]));
   setTimeout(()=>{
    clearInterval(st);
@@ -282,7 +283,7 @@ function hatch3(){
 $('hatch').onclick=()=>hatch();
 $('hatch3').onclick=hatch3;
 $('auto').onclick=()=>{S.auto=S.auto=='n'?'':'n';ui()};
-setInterval(()=>{if(S.busy||panel||Date.now()<autoWait)return;if(S.auto=='n'){const e=EGGS[S.world];if(S.unlocked.lava&&S.coins>=e.cost*3&&S.pets.length+3<=cap())hatch3();else hatch(true)}else if(S.auto)hatch(true,S.auto)},300);
+setInterval(()=>{if(S.busy||panel||Date.now()<autoWait)return;if(S.auto=='n'){const e=EGGS[S.world];if(S.unlocked.lava&&S.coins>=e.cost*3&&S.pets.length+3<=cap())hatch3();else hatch(true)}else if(S.auto){const T=TIERS[S.auto];if(T&&S.unlocked.lava&&tierOn(S.auto)&&S.coins>=EGGS[S.world].cost*3*T.cost&&S.pets.length+3<=cap())hatch3(S.auto);else hatch(true,S.auto)}},300);
 $('ov').onclick=()=>{};
 function ui(){
  const egg=EGGS[S.world];if(S.auto&&S.auto!='n'&&!tierOn(S.auto))S.auto='';
@@ -297,8 +298,9 @@ function ui(){
  const lk=(1+S.up.luck*.05)*evm('luck'),w=egg.loot.map(([t,c],i)=>[t,i?c*lk:c]),tot=w.reduce((a,x)=>a+x[1],0);
  $('odds').innerHTML=`<b style="font-size:18px">📖 Odds</b><div style="font-size:12px;opacity:.7">Tap a pet to auto delete it</div>`+w.map(([t,c])=>`<div class="o ${S.autoDel[t]?'ad':''}" data-t="${t}"><span>${PETS[t].e} ${PETS[t].n}${S.autoDel[t]?' 🗑️':''}<br><span class="pill r-${PETS[t].r}" style="font-size:11px;padding:1px 8px;box-shadow:none">${PETS[t].r}</span></span><b>${+(c/tot*100).toFixed(c/tot<.01?3:2)}%</b></div>`).join('');
  $('odds').querySelectorAll('[data-t]').forEach(e=>e.onclick=()=>{const t=e.dataset.t;if(PETS[t].r=='Secret')return toast('Secret pets can’t be auto deleted');S.autoDel[t]=!S.autoDel[t];ui();Game.saveSoon&&Game.saveSoon()});
- $('tiers').innerHTML=Object.keys(TIERS).filter(tierOn).map(k=>{const T=TIERS[k],ad=adMap(k);return `<div class="erow"><div class="card eb"><div style="font-weight:700;font-size:22px">${T.n} ${egg.n}</div><div class="eic">${egg.e}</div><div style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="btn" data-h="${k}">Hatch 🪙 ${fmt(egg.cost*T.cost)}</button><button class="btn ${S.auto==k?'':'gray'}" data-a="${k}">Auto Hatch: ${S.auto==k?'ON':'OFF'}</button></div></div><div class="card od"><b style="font-size:18px">📖 ${T.n} Odds</b><div style="font-size:12px;opacity:.7">Tap a pet to auto delete it</div>`+w.map(([t,c])=>`<div class="o ${ad[t]?'ad':''}" data-k="${k}" data-t="${t}"><span>${PETS[t].e} ${T.n} ${PETS[t].n}${ad[t]?' 🗑️':''}<br><span class="pill r-${PETS[t].r}" style="font-size:11px;padding:1px 8px;box-shadow:none">${PETS[t].r}</span></span><b>${+(c/tot*100).toFixed(c/tot<.01?3:2)}%</b></div>`).join('')+`</div></div>`}).join('');
+ $('tiers').innerHTML=Object.keys(TIERS).filter(tierOn).map(k=>{const T=TIERS[k],ad=adMap(k);return `<div class="erow"><div class="card eb"><div style="font-weight:700;font-size:22px">${T.n} ${egg.n}</div><div class="eic">${egg.e}</div><div style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="btn" data-h="${k}">Hatch 🪙 ${fmt(egg.cost*T.cost)}</button>${S.unlocked.lava?`<button class="btn" data-h3="${k}">Hatch x3 🪙 ${fmt(egg.cost*3*T.cost)}</button>`:''}<button class="btn ${S.auto==k?'':'gray'}" data-a="${k}">Auto Hatch: ${S.auto==k?'ON':'OFF'}</button></div></div><div class="card od"><b style="font-size:18px">📖 ${T.n} Odds</b><div style="font-size:12px;opacity:.7">Tap a pet to auto delete it</div>`+w.map(([t,c])=>`<div class="o ${ad[t]?'ad':''}" data-k="${k}" data-t="${t}"><span>${PETS[t].e} ${T.n} ${PETS[t].n}${ad[t]?' 🗑️':''}<br><span class="pill r-${PETS[t].r}" style="font-size:11px;padding:1px 8px;box-shadow:none">${PETS[t].r}</span></span><b>${+(c/tot*100).toFixed(c/tot<.01?3:2)}%</b></div>`).join('')+`</div></div>`}).join('');
  $('tiers').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>hatch(false,b.dataset.h));
+ $('tiers').querySelectorAll('[data-h3]').forEach(b=>b.onclick=()=>hatch3(b.dataset.h3));
  $('tiers').querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const k=b.dataset.a;S.auto=S.auto==k?'':k;ui()});
  $('tiers').querySelectorAll('[data-t]').forEach(e=>e.onclick=()=>{const t=e.dataset.t,m=adMap(e.dataset.k);if(PETS[t].r=='Secret')return toast('Secret pets can’t be auto deleted');m[t]=!m[t];ui();Game.saveSoon&&Game.saveSoon()})
 }
