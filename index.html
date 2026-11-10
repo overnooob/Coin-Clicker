@@ -227,8 +227,9 @@ $('autoBtn').onclick=()=>{S.autoClick=!S.autoClick;ui()};
 let last=performance.now();
 setInterval(()=>{const n=performance.now(),dt=(n-last)/1000;last=n;if(!S.autoClick||!S.in)return;autoAcc+=autoRate(S.up.auto)*dt;if(autoAcc>=1){const k=Math.floor(autoAcc);autoAcc-=k;click(0,0,cpc()*k)}},100);
 /* eggs */
+const lootOf=k=>{const o=(S.odds||{})[k],b=EGGS[k].loot;return o?b.map(([t,c])=>[t,typeof o[t]=='number'?o[t]:c]):b};
 function roll(){const egg=EGGS[S.world],lk=(1+S.up.luck*.05)*evm('luck');
- const w=egg.loot.map(([k,c],i)=>[k,i==0?c:c*lk]);const tot=w.reduce((a,x)=>a+x[1],0);let r=Math.random()*tot;
+ const w=lootOf(S.world).map(([k,c],i)=>[k,i==0?c:c*lk]);const tot=w.reduce((a,x)=>a+x[1],0);let r=Math.random()*tot;
  for(const [k,c] of w){if((r-=c)<=0)return k}return w[0][0]}
 function hatch(silent,tier){
  const egg=EGGS[S.world],T=tier?TIERS[tier]:null,cost=egg.cost*(T?T.cost:1),mode=tier||'n';
@@ -295,7 +296,7 @@ function ui(){
  $('hatch3').textContent=S.unlocked.lava?`Hatch x3 🪙 ${fmt(egg.cost*3)}`:'🔒 Hatch x3 (Lava)';$('hatch3').className='btn '+(S.unlocked.lava?'':'gray');
  $('auto').textContent='Auto Hatch: '+(S.auto=='n'?'ON':'OFF');$('auto').className='btn '+(S.auto=='n'?'':'gray');
  $('autoBtn').textContent='🤖 Auto Clicker: '+(S.autoClick?'ON':'OFF');$('autoBtn').className='btn '+(S.autoClick?'':'gray');
- const lk=(1+S.up.luck*.05)*evm('luck'),w=egg.loot.map(([t,c],i)=>[t,i?c*lk:c]),tot=w.reduce((a,x)=>a+x[1],0);
+ const lk=(1+S.up.luck*.05)*evm('luck'),w=lootOf(S.world).map(([t,c],i)=>[t,i?c*lk:c]),tot=w.reduce((a,x)=>a+x[1],0);
  $('odds').innerHTML=`<b style="font-size:18px">📖 Odds</b><div style="font-size:12px;opacity:.7">Tap a pet to auto delete it</div>`+w.map(([t,c])=>`<div class="o ${S.autoDel[t]?'ad':''}" data-t="${t}"><span>${PETS[t].e} ${PETS[t].n}${S.autoDel[t]?' 🗑️':''}<br><span class="pill r-${PETS[t].r}" style="font-size:11px;padding:1px 8px;box-shadow:none">${PETS[t].r}</span></span><b>${+(c/tot*100).toFixed(c/tot<.01?3:2)}%</b></div>`).join('');
  $('odds').querySelectorAll('[data-t]').forEach(e=>e.onclick=()=>{const t=e.dataset.t;if(PETS[t].r=='Secret')return toast('Secret pets can’t be auto deleted');S.autoDel[t]=!S.autoDel[t];ui();Game.saveSoon&&Game.saveSoon()});
  $('tiers').innerHTML=Object.keys(TIERS).filter(tierOn).map(k=>{const T=TIERS[k],ad=adMap(k);return `<div class="erow"><div class="card eb"><div style="font-weight:700;font-size:22px">${T.n} ${egg.n}</div><div class="eic">${egg.e}</div><div style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="btn" data-h="${k}">Hatch 🪙 ${fmt(egg.cost*T.cost)}</button>${S.unlocked.lava?`<button class="btn" data-h3="${k}">Hatch x3 🪙 ${fmt(egg.cost*3*T.cost)}</button>`:''}<button class="btn ${S.auto==k?'':'gray'}" data-a="${k}">Auto Hatch: ${S.auto==k?'ON':'OFF'}</button></div></div><div class="card od"><b style="font-size:18px">📖 ${T.n} Odds</b><div style="font-size:12px;opacity:.7">Tap a pet to auto delete it</div>`+w.map(([t,c])=>`<div class="o ${ad[t]?'ad':''}" data-k="${k}" data-t="${t}"><span>${PETS[t].e} ${T.n} ${PETS[t].n}${ad[t]?' 🗑️':''}<br><span class="pill r-${PETS[t].r}" style="font-size:11px;padding:1px 8px;box-shadow:none">${PETS[t].r}</span></span><b>${+(c/tot*100).toFixed(c/tot<.01?3:2)}%</b></div>`).join('')+`</div></div>`}).join('');
@@ -350,7 +351,17 @@ function render(){
  else if(panel=='admin'){$('pt').textContent='🛡️ Admin';
   pb.innerHTML=`<div class="row" style="display:block"><b>🥚 Huge / Titanic Egg</b><select class="inp" id="hk"><option value="huge">Huge</option><option value="titan">Titanic</option></select><select class="inp" id="hg">${Object.entries(EGGS).map(([k,e])=>`<option value="${k}">${e.n}</option>`).join('')}</select><div style="display:flex;gap:6px"><input class="inp" id="aon" type="number" min="1" value="5" style="flex:1"><select class="inp" id="aou" style="flex:1"><option value="60000">minutes</option><option value="3600000">hours</option><option value="86400000">days</option></select></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn orange" id="aes">Spawn</button><button class="btn red" id="aex2">Stop</button></div></div>
   <div class="row" style="display:block"><b>🎉 Event</b><select class="inp" id="aet"><option value="coins">🪙 Coins</option><option value="luck">🍀 Luck</option><option value="speed">⚡ Hatch Speed</option></select><input class="inp" id="aex" type="number" step="0.1" min="1" value="1.2" placeholder="Multiplier (e.g. 1.2)"><div style="display:flex;gap:6px"><input class="inp" id="aen" type="number" min="1" value="5" style="flex:1"><select class="inp" id="aeu" style="flex:1"><option value="60000">minutes</option><option value="3600000">hours</option><option value="86400000">days</option></select></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" id="aeg">Start Event</button><button class="btn red" id="aek">Stop</button></div></div>
-  <div class="row" style="display:block"><b>📢 Announcement</b><input class="inp" id="amt" maxlength="100" placeholder="Message for everyone (10 seconds)"><button class="btn" id="amg" style="margin-top:10px">Send</button></div>`;
+  <div class="row" style="display:block"><b>📢 Announcement</b><input class="inp" id="amt" maxlength="100" placeholder="Message for everyone (10 seconds)"><button class="btn" id="amg" style="margin-top:10px">Send</button></div>
+  <div class="row" style="display:block"><b>🎲 Change pet odds</b><select class="inp" id="oge">${Object.entries(EGGS).map(([k,e])=>`<option value="${k}">${e.n}</option>`).join('')}</select><select class="inp" id="ogp"></select><input class="inp" id="ogv" type="number" step="any" min="0" max="100" placeholder="New chance % (e.g. 5)"><div style="display:flex;gap:8px;margin-top:12px"><button class="btn orange" id="ogs">Apply</button><button class="btn red" id="ogr">Reset egg</button></div></div>
+  <div class="row" style="display:flex;align-items:center;justify-content:space-between"><b>🎁 Gift box cooldown</b><button class="btn orange" id="agr" style="margin:0 0 0 auto">Reset for everyone</button></div>`;
+  const oddsFill=()=>{const keep=$('ogp').value;$('ogp').innerHTML=lootOf($('oge').value).map(([k,c])=>`<option value="${k}">${PETS[k].e} ${PETS[k].n} (${+(+c).toFixed(4)}%)</option>`).join('');if(keep&&[...$('ogp').options].some(o=>o.value==keep))$('ogp').value=keep};
+  $('oge').onchange=()=>{$('ogp').innerHTML='';oddsFill()};oddsFill();
+  $('ogs').onclick=async()=>{const egg=$('oge').value,pet=$('ogp').value,x=parseFloat($('ogv').value);if(!(x>=0&&x<=100))return toast('Chance must be 0–100');
+   const l=lootOf(egg),rest=l.filter(a=>a[0]!=pet),rs=rest.reduce((a,b)=>a+b[1],0),m={};
+   l.forEach(([k,c])=>{m[k]=+(k==pet?x:rs>0?c*(100-x)/rs:(100-x)/rest.length).toFixed(6)});
+   try{await Admin.odds(egg,m);S.odds=Object.assign({},S.odds,{[egg]:m});oddsFill();ui();toast('Odds changed for everyone!')}catch(e){toast('Failed: '+(e.code||e.message))}};
+  $('ogr').onclick=async()=>{const egg=$('oge').value;try{await Admin.odds(egg,null);S.odds=Object.assign({},S.odds,{[egg]:null});oddsFill();ui();toast('Odds reset')}catch(e){toast('Failed: '+(e.code||e.message))}};
+  $('agr').onclick=async()=>{try{await Admin.resetGift();toast('Gift cooldown reset for everyone!')}catch(e){toast('Failed: '+(e.code||e.message))}};
   $('aes').onclick=async()=>{const n=+$('aon').value,u=+$('aou').value;if(!(n>0)||n*u>30*864e5)return toast('Check the time');try{await Admin.huge($('hg').value,n*u,$('hk').value);toast(TIERS[$('hk').value].n+' Egg started!')}catch(e){toast('Failed: '+(e.code||e.message))}};
   $('aex2').onclick=async()=>{try{await Admin.huge($('hg').value,0,$('hk').value);toast(TIERS[$('hk').value].n+' Egg stopped')}catch(e){toast('Failed: '+(e.code||e.message))}};
   $('aeg').onclick=async()=>{const m=+$('aex').value,n=+$('aen').value,u=+$('aeu').value;if(!(m>0&&m<=1000)||!(n>0)||n*u>30*864e5)return toast('Check multiplier and time');try{await Admin.startEvent($('aet').value,m,n*u);toast('Event started!')}catch(e){toast('Failed: '+(e.code||e.message))}};
@@ -397,6 +408,7 @@ function tick(){const now=Date.now();let h='',key='';for(const k of ['coins','lu
  {const r=Math.ceil((UPD-now)/1000);$('updt').textContent=r>0?cd(r):'Live now! 🎉'}
  {const el=$('rwt');if(el){const r=Math.ceil((DELIVER-now)/1000);el.textContent=r>0?'🎁 Rewards delivered in: '+cd(r):'🎁 Rewards delivered!'}}
  $('evs').innerHTML=h;if(key!==evKey){evKey=key;ui()}}
+Game.setOdds=d=>{S.odds=d||{};ui()};Game.setGiftReset=d=>{if(!d||!d.reset||!(S.giftCd>0))return;if(d.reset>S.giftCd-GIFT_CD){S.giftCd=0;ui();tick();Game.saveSoon&&Game.saveSoon()}};
 Game.setEvents=d=>{S.ev={};for(const k of ['coins','luck','speed'])if(d[k]&&d[k].end>Date.now())S.ev[k]={m:+d[k].m,end:+d[k].end};tick()};
 Game.setChat=setChat;Game.deliver=DELIVER;Game.setRewards=d=>{S.rewardsDoc=d;claimCheck()};
 Game.power=()=>S.pets.reduce((a,p)=>a+pw(p),0);
@@ -419,7 +431,7 @@ else{
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
 let user=null,lastJson='',evSub=0;
 const evDoc=()=>doc(db,'events','live');
-window.Admin={startEvent:(t,m,ms)=>setDoc(evDoc(),{[t]:{m,end:Date.now()+ms}},{merge:true}),stopEvent:t=>setDoc(evDoc(),{[t]:{m:1,end:0}},{merge:true}),huge:(egg,ms,kind)=>setDoc(doc(db,'events',kind==='titan'?'titan':'huge'),{egg,end:ms?Date.now()+ms:0}),send:text=>{const n=Date.now();return setDoc(doc(db,'events','msg'),{text,from:'overrguy',sent:n,id:n})}};
+window.Admin={odds:(egg,m)=>setDoc(doc(db,'events','odds'),{[egg]:m},{merge:true}),resetGift:()=>setDoc(doc(db,'events','gift'),{reset:Date.now()}),startEvent:(t,m,ms)=>setDoc(evDoc(),{[t]:{m,end:Date.now()+ms}},{merge:true}),stopEvent:t=>setDoc(evDoc(),{[t]:{m:1,end:0}},{merge:true}),huge:(egg,ms,kind)=>setDoc(doc(db,'events',kind==='titan'?'titan':'huge'),{egg,end:ms?Date.now()+ms:0}),send:text=>{const n=Date.now();return setDoc(doc(db,'events','msg'),{text,from:'overrguy',sent:n,id:n})}};
 Game.pushLB=async()=>{if(!user||!Game.ready)return;try{await setDoc(doc(db,'leaderboard',user.uid),{nick:user.displayName||user.email.split('@')[0],coins:Math.floor(Game.save().coins),power:Math.round(Game.power()*100)/100})}catch(e){}};
 window.LB={fetch:async(m)=>{await Game.pushLB();const sn=await getDocs(query(collection(db,'leaderboard'),orderBy(m=='power'?'power':'coins','desc'),limit(100)));return sn.docs.map(d=>d.data())}};
 const chatAdd=(text,type)=>{if(!user)return Promise.reject({code:'not-signed-in'});return addDoc(collection(db,'chat'),{uid:user.uid,nick:user.displayName||user.email.split('@')[0],text,type,t:Date.now()})};
@@ -451,7 +463,7 @@ onAuthStateChanged(auth,async u=>{
  catch(e){err('Could not load your save: '+e.code);await signOut(auth);return}
  $('login').style.display='none';$('lpass').value='';
  if(u.email.split('@')[0]==='overrguy')$('adminBtn').style.display='';
- if(!evSub){evSub=1;onSnapshot(evDoc(),sn=>Game.setEvents(sn.exists()?sn.data():{}),()=>{});onSnapshot(doc(db,'events','huge'),sn=>Game.setHuge(sn.exists()?sn.data():null),()=>{});onSnapshot(query(collection(db,'chat'),orderBy('t','desc'),limit(50)),sn=>Game.setChat(sn.docs.map(d=>d.data()).reverse()),()=>{});onSnapshot(doc(db,'events','rewards'),sn=>{if(sn.exists())rwDone=true;Game.setRewards(sn.exists()?sn.data():null)},()=>{});onSnapshot(doc(db,'events','titan'),sn=>Game.setTitan(sn.exists()?sn.data():null),()=>{});let lastMsg=0;onSnapshot(doc(db,'events','msg'),sn=>{if(!sn.exists())return;const d=sn.data();if(d.id===lastMsg)return;lastMsg=d.id;if(Math.abs(Date.now()-d.sent)<20000)Game.announce(d.from,d.text)},()=>{})}});
+ if(!evSub){evSub=1;onSnapshot(evDoc(),sn=>Game.setEvents(sn.exists()?sn.data():{}),()=>{});onSnapshot(doc(db,'events','huge'),sn=>Game.setHuge(sn.exists()?sn.data():null),()=>{});onSnapshot(query(collection(db,'chat'),orderBy('t','desc'),limit(50)),sn=>Game.setChat(sn.docs.map(d=>d.data()).reverse()),()=>{});onSnapshot(doc(db,'events','rewards'),sn=>{if(sn.exists())rwDone=true;Game.setRewards(sn.exists()?sn.data():null)},()=>{});onSnapshot(doc(db,'events','titan'),sn=>Game.setTitan(sn.exists()?sn.data():null),()=>{});onSnapshot(doc(db,'events','odds'),sn=>Game.setOdds(sn.exists()?sn.data():{}),()=>{});onSnapshot(doc(db,'events','gift'),sn=>Game.setGiftReset(sn.exists()?sn.data():null),()=>{});let lastMsg=0;onSnapshot(doc(db,'events','msg'),sn=>{if(!sn.exists())return;const d=sn.data();if(d.id===lastMsg)return;lastMsg=d.id;if(Math.abs(Date.now()-d.sent)<20000)Game.announce(d.from,d.text)},()=>{})}});
 let sst;Game.saveSoon=()=>{clearTimeout(sst);sst=setTimeout(saveNow,700)};
 setInterval(saveNow,15000);
 addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
