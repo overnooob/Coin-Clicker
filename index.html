@@ -10,7 +10,7 @@ html,body{height:100%;margin:0}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
 body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color:var(--ink);overflow:hidden}
 #game{--bg1:#3aa655;--bg2:#55c070;height:100%;display:flex;flex-direction:column;background-color:var(--bg1);background-image:linear-gradient(45deg,var(--bg2) 25%,transparent 25%,transparent 75%,var(--bg2) 75%),linear-gradient(45deg,var(--bg2) 25%,transparent 25%,transparent 75%,var(--bg2) 75%);background-size:80px 80px;background-position:0 0,40px 40px}
-#game[data-world=candy]{--bg1:#ff7ac8;--bg2:#ff9fd8}#game[data-world=lava]{--bg1:#ff8a1f;--bg2:#ffa84d}
+#game[data-world=candy]{--bg1:#ff7ac8;--bg2:#ff9fd8}#game[data-world=lava]{--bg1:#ff8a1f;--bg2:#ffa84d}#game[data-world=circus]{--bg1:#d9232b;--bg2:#f2484f}
 #top{display:flex;justify-content:center;align-items:center;padding:12px;gap:10px;flex-wrap:wrap}
 .pill{background:var(--surface);border-radius:30px;padding:8px 18px;font-weight:700;font-size:22px;box-shadow:0 5px 0 rgba(0,0,0,.2)}
 .sq{width:48px;height:48px;border-radius:16px;border:none;font-size:24px;cursor:pointer;background:var(--surface);box-shadow:0 5px 0 rgba(0,0,0,.2)}
@@ -20,6 +20,12 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
 #coin{width:min(44vw,220px);height:min(44vw,220px);border-radius:50%;border:none;cursor:pointer;font-size:min(22vw,110px);background:radial-gradient(circle at 35% 30%,#fff6a8,#ffc928 55%,#e69500);box-shadow:0 10px 0 #b36f00,0 16px 24px rgba(0,0,0,.3);transition:transform .08s}
 #coin:active{transform:scale(.92) translateY(6px);box-shadow:0 4px 0 #b36f00}
 #autoBtn{margin-top:22px}
+#giftWrap{text-align:center;position:relative;display:none}
+#gift{width:min(30vw,140px);height:min(30vw,140px);border-radius:50%;border:none;cursor:pointer;font-size:min(15vw,70px);background:radial-gradient(circle at 35% 30%,#e9d2ff,#a864f0 55%,#6f2fc2);box-shadow:0 8px 0 #4a1c8a,0 12px 18px rgba(0,0,0,.3);transition:transform .08s}
+#gift:active{transform:scale(.92) translateY(6px);box-shadow:0 3px 0 #4a1c8a}
+#gift.cd{filter:grayscale(.6);opacity:.75}
+#giftInfo{position:absolute;top:-6px;right:-6px;width:40px;height:40px;font-size:20px;border-radius:14px;z-index:2;background:#a864f0;box-shadow:0 4px 0 #4a1c8a;padding:0;display:flex;align-items:center;justify-content:center;line-height:1;text-align:center}#giftInfo:active{box-shadow:0 1px 0 #4a1c8a;transform:translateY(3px)}
+#gsub{display:none;margin-top:14px;font-size:15px;padding:4px 12px}
 .float{position:absolute;font-weight:700;font-size:28px;color:#fff;pointer-events:none;animation:up .8s forwards}
 @keyframes up{to{transform:translateY(-90px);opacity:0}}
 .card{background:var(--surface);border-radius:26px;padding:16px 18px;box-shadow:0 7px 0 rgba(0,0,0,.2)}
@@ -61,6 +67,13 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
 @keyframes drop{from{transform:translateY(-70vh) scale(.5)}to{transform:none}}
 #oe.shake{animation:shake var(--d,2s) ease-in-out forwards}
 @keyframes shake{0%{transform:rotate(0) scale(1)}12%{transform:rotate(-14deg)}24%{transform:rotate(14deg)}36%{transform:rotate(-18deg) scale(1.08)}48%{transform:rotate(18deg) scale(1.1)}62%{transform:rotate(-22deg) scale(1.18)}76%{transform:rotate(22deg) scale(1.25)}90%{transform:rotate(-26deg) scale(1.35)}100%{transform:scale(1.6)}}
+#o3{display:none;align-items:center;justify-content:center;gap:min(2vw,14px);width:100%;max-width:1000px;padding:0 6px}
+#o3 .s3{display:flex;align-items:center;justify-content:center;flex:1;min-width:0}
+#o3 .e3{font-size:min(30vw,170px);line-height:1;filter:drop-shadow(0 12px 18px rgba(0,0,0,.45));animation:drop .5s cubic-bezier(.3,1.6,.5,1)}
+#o3 .e3.shake{animation:shake var(--d,2s) ease-in-out forwards}
+#o3 .r3{--rs:min(44vw,300px);display:flex;flex-direction:column;align-items:center;color:#fff;text-align:center;min-width:0;position:relative;animation:pop .55s cubic-bezier(.3,1.6,.5,1)}
+#o3 .r3 .rays{position:absolute;width:var(--rs);height:var(--rs);top:50%;left:50%;margin:calc(var(--rs)/-2) 0 0 calc(var(--rs)/-2);background:repeating-conic-gradient(rgba(255,230,120,.5) 0 10deg,transparent 10deg 20deg);border-radius:50%;animation:spin 6s linear infinite;-webkit-mask:radial-gradient(circle,#000 20%,transparent 70%);mask:radial-gradient(circle,#000 20%,transparent 70%)}
+#o3 .r3 .big{font-size:min(28vw,140px);position:relative}#o3 .r3 .nm{font-size:min(5.5vw,28px);font-weight:700;position:relative}#o3 .r3 .pill{font-size:min(3.6vw,15px);margin-top:6px;padding:2px 12px;position:relative}#o3 .r3 .adl{font-size:13px;margin-top:4px}
 #flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:25}
 #flash.go{animation:fl .6s}
 @keyframes fl{0%{opacity:1}100%{opacity:0}}
@@ -103,11 +116,12 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
  <div id="bar"><div id="top"><button class="sq" id="snd" title="Sound">🔊</button><div class="pill" id="coins"></div><div class="pill" id="world" style="font-size:18px"></div></div><div id="acct"><button class="btn orange" id="adminBtn" style="display:none;padding:8px 14px;font-size:15px">🛡️Admin</button><button class="btn" id="chatBtn" style="padding:8px 14px;font-size:15px">💬 Chat</button><button class="btn blue" id="lbBtn" style="padding:8px 14px;font-size:15px">🏆 Leaderboard</button><span class="pill" id="nick" style="font-size:16px"></span><button class="btn red" id="logout" style="padding:8px 14px;font-size:15px">Log out</button></div></div>
  <div id="evs" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"></div>
  <div id="main">
+  <div id="giftWrap"><button class="sq" id="giftInfo" aria-label="Gift info">ℹ️</button><button id="gift" aria-label="Gift">🎁</button><div><span class="pill" id="gsub"></span></div></div>
   <div id="coinWrap"><button id="coin" aria-label="Click the coin">🪙</button><div><button class="btn" id="autoBtn"></button></div></div>
   <div id="eggs" style="display:flex;flex-direction:column;gap:16px"><div class="erow"><div class="card" id="eggBox">
    <div style="font-weight:700;font-size:22px" id="eggName"></div>
    <div id="eggIcon">🥚</div>
-   <div style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="btn" id="hatch"></button><button class="btn gray" id="auto"></button></div>
+   <div style="display:flex;gap:8px;justify-content:center;margin-top:8px"><button class="btn" id="hatch"></button><button class="btn" id="hatch3"></button><button class="btn gray" id="auto"></button></div>
   </div>
   <div class="card" id="odds"></div></div><div id="tiers" style="display:flex;flex-direction:column;gap:16px"></div></div>
  </div>
@@ -118,7 +132,7 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
  </div>
 </div>
 <div id="modal"><div id="rw" style="display:none"></div><div id="panel"><div id="ph"><span id="pt"></span><button class="btn red" id="close">✕</button></div><div id="pb"></div></div></div>
-<div id="ov"><div id="oe">🥚</div><div id="res"><div class="rays"></div><div class="big"></div><div class="nm"></div><div class="pill" style="font-size:16px;margin-top:8px;position:relative"></div><div class="adl"></div></div></div>
+<div id="ov"><div id="o3"></div><div id="oe">🥚</div><div id="res"><div class="rays"></div><div class="big"></div><div class="nm"></div><div class="pill" style="font-size:16px;margin-top:8px;position:relative"></div><div class="adl"></div></div></div>
 <div id="cf"><div class="card"><div id="cft"></div><div style="display:flex;gap:10px;justify-content:center;margin-top:14px"><button class="btn red" id="cfy">Delete</button><button class="btn gray" id="cfn">Cancel</button></div></div></div>
 <div id="login"><div class="card"><div id="lcoin">🪙</div><div id="ltitle">Coin Clicker</div>
 <div id="ltabs"><button class="btn" id="ltab1">Log in</button><button class="btn gray" id="ltab2">Register</button></div><input class="inp" id="lnick" placeholder="Nickname" maxlength="20" autocomplete="username"><input class="inp" id="lpass" type="password" placeholder="Password" maxlength="50" autocomplete="current-password">
@@ -131,12 +145,14 @@ const RC={Common:0,Uncommon:1,Rare:2,Epic:3,Legendary:4,Secret:5};
 const PETS={
  cat:{n:'Cat',e:'🐱',r:'Common',p:.2},dog:{n:'Dog',e:'🐶',r:'Uncommon',p:.5},bunny:{n:'Bunny',e:'🐰',r:'Rare',p:1.2},
  ccat:{n:'Candy Cat',e:'😻',r:'Uncommon',p:3},cdog:{n:'Choclate Dog',e:'🐕',r:'Rare',p:6},lbun:{n:'Lolipop Bunny',e:'🍭',r:'Epic',p:14},over:{n:'Candy Overlord',e:'😈',r:'Secret',p:100},
- lcat:{n:'Lava Cat',e:'😾',r:'Uncommon',p:30},mdog:{n:'Magma Dog',e:'🐺',r:'Rare',p:60},fbun:{n:'Fire Bunny',e:'🐇',r:'Epic',p:140},ldrg:{n:'Lava Dragon',e:'🐉',r:'Legendary',p:400},phx:{n:'Phoenix',e:'🐦‍🔥',r:'Secret',p:2500}};
+ lcat:{n:'Lava Cat',e:'😾',r:'Uncommon',p:30},mdog:{n:'Magma Dog',e:'🐺',r:'Rare',p:60},fbun:{n:'Fire Bunny',e:'🐇',r:'Epic',p:140},ldrg:{n:'Lava Dragon',e:'🐉',r:'Legendary',p:400},phx:{n:'Phoenix',e:'🐦‍🔥',r:'Secret',p:2500},
+ gir:{n:'Giraffe',e:'🦒',r:'Uncommon',p:300},bel:{n:'Ball Elephant',e:'🐘',r:'Rare',p:600},cmon:{n:'Circus Monkey',e:'🐵',r:'Epic',p:1400},ccl:{n:'Clown Cat',e:'🤡',r:'Legendary',p:4000},jest:{n:'Jester',e:'🃏',r:'Secret',p:25000}};
 const EGGS={
  spawn:{n:'Basic Egg',e:'🥚',cost:100,loot:[['cat',60],['dog',30],['bunny',10]]},
- candy:{n:'Choclate Egg',e:'🍫',cost:2500,loot:[['ccat',60],['cdog',30],['lbun',9.99],['over',.01]]},
- lava:{n:'Magma Egg',e:'🔥',cost:40000,loot:[['lcat',55],['mdog',30],['fbun',13],['ldrg',1.98],['phx',.02]]}};
-const WORLDS={spawn:{n:'Spawn',e:'🌳',cost:0},candy:{n:'Candy',e:'🍬',cost:4000},lava:{n:'Lava',e:'🌋',cost:100000}};
+ candy:{n:'Choclate Egg',e:'🍫',cost:2500,loot:[['ccat',60],['cdog',30],['lbun',9.97],['over',.03]]},
+ lava:{n:'Magma Egg',e:'🔥',cost:40000,loot:[['lcat',55],['mdog',30],['fbun',13],['ldrg',1.98],['phx',.02]]},
+ circus:{n:'Carnival Egg',e:'🎪',cost:400000,loot:[['gir',55],['bel',30],['cmon',13],['ccl',1.98],['jest',.02]]}};
+const WORLDS={spawn:{n:'Spawn',e:'🌳',cost:0},candy:{n:'Candy',e:'🍬',cost:4000},lava:{n:'Lava',e:'🌋',cost:100000},circus:{n:'Circus',e:'🎪',cost:1000000}};
 const TIERS={huge:{n:'Huge',m:1.3,cost:3},titan:{n:'Titanic',m:1.6,cost:8}};
 const STORAGE=[100,150,200,250,300,350,400];
 const hatchTime=l=>2600-l*200;
@@ -148,7 +164,7 @@ const UP={
  storage:{n:'Storage',e:'📦',max:6,cost:l=>Math.round(500*Math.pow(3,l)),d:l=>`Holds ${STORAGE[l]} pets`},
  auto:{n:'Auto Clicker Speed',e:'🤖',max:12,cost:l=>Math.round(200*Math.pow(1.8,l)),d:l=>`${autoRate(l)} auto clicks / sec`},
  hatch:{n:'Hatch Speed',e:'⚡',max:8,cost:l=>Math.round(300*Math.pow(2.6,l)),d:l=>`Hatch takes ${(hatchTime(l)/1000).toFixed(1)}s`}};
-const S={coins:0,world:'spawn',unlocked:{spawn:1},up:{clicks:0,luck:0,equips:0,storage:0,auto:0,hatch:0},pets:[],uid:1,auto:'',autoClick:true,busy:false,in:false,autoDel:{},autoDelH:{},autoDelT:{},ev:{},tier:{huge:null,titan:null},sel:new Set(),multi:false};
+const S={coins:0,world:'spawn',unlocked:{spawn:1},up:{clicks:0,luck:0,equips:0,storage:0,auto:0,hatch:0},pets:[],uid:1,auto:'',autoClick:true,busy:false,in:false,autoDel:{},autoDelH:{},autoDelT:{},ev:{},tier:{huge:null,titan:null},sel:new Set(),multi:false,gift:null,giftCd:0,pb:{}};
 let chatData=[],chatInit=false,chatSeen=0,chatLast=0,LBdata=null,LBerr='',LBmode='coins',autoWait=0,panel=null,autoAcc=0,music=true,sound=true;
 const slots=()=>3+S.up.equips, cap=()=>STORAGE[S.up.storage];
 const equipped=()=>S.pets.filter(p=>p.eq);
@@ -159,8 +175,33 @@ const mult=()=>1+equipped().reduce((a,p)=>a+pw(p),0);
 const craftGroups=k=>{const g={};S.pets.forEach(p=>{if(kind(p)==k&&!p.lock&&!p.eq)(g[p.t]=g[p.t]||[]).push(p)});return g};
 const craftAllN=()=>[0,1].reduce((n,k)=>n+Object.values(craftGroups(k)).reduce((a,l)=>a+Math.floor(l.length/3),0),0);
 const craftList=p=>p.lock||p.titan?[]:S.pets.filter(x=>x.t==p.t&&kind(x)==kind(p)&&!x.lock&&(x==p||!x.eq));
-function ask(m,cb){$('cft').textContent=m;$('cf').className='show';$('cfy').onclick=()=>{$('cf').className='';cb()};$('cfn').onclick=()=>$('cf').className=''}
+function ask(m,cb,yes){$('cft').textContent=m;$('cfy').textContent=yes||'Delete';$('cf').className='show';$('cfy').onclick=()=>{$('cf').className='';cb()};$('cfn').onclick=()=>$('cf').className=''}
 const cpc=()=>(1+S.up.clicks)*mult()*evm('coins');
+/* gift box (Circus) */
+const GIFT_CD=3*3600*1000,GIFT_BOOST=5*60*1000,JW=[.2,.02,.002],BW=(100-JW[0]-JW[1]-JW[2])/3;
+const GIFT_R=[{id:'luck',e:'🍀',n:'x2 Luck (5 min)',w:BW},{id:'coins',e:'🪙',n:'x2 Coins (5 min)',w:BW},{id:'speed',e:'⚡',n:'x2 Hatch Speed (5 min)',w:BW},
+ {id:'jest',e:PETS.jest.e,n:'Jester',w:JW[0],r:'Secret'},{id:'jest1',e:PETS.jest.e,n:'Huge Jester',w:JW[1],r:'Secret'},{id:'jest2',e:PETS.jest.e,n:'Titanic Jester',w:JW[2],r:'Secret'}];
+const GP=Object.keys(PETS).filter(k=>PETS[k].r!='Secret');
+const reqName=o=>(o.k==2?'Titanic ':o.k==1?'Huge ':'')+PETS[o.t].n;
+function giftOffer(){if(!S.gift||!PETS[S.gift.t]||S.gift.k>2)S.gift={t:GP[Math.random()*GP.length|0],k:Math.random()*3|0};return S.gift}
+const giftFind=()=>{const o=giftOffer();return S.pets.find(p=>p.t==o.t&&kind(p)==o.k&&!p.lock&&!p.eq)};
+const giftLeft=()=>Math.max(0,Math.ceil((S.giftCd-Date.now())/1000));
+function giftClaim(){
+ if(!S.in||S.busy)return;
+ const left=giftLeft();if(left>0){sfx('err');return toast('🎁 Cooldown: '+cd(left))}
+ const o=giftOffer(),p=giftFind();
+ if(!p){sfx('err');return toast('You need: '+reqName(o)+' (not locked, not equipped)',2600)}
+ ask('Trade '+reqName(o)+' for a random gift?',()=>{
+  const q=giftFind();if(!q||giftLeft()>0)return;
+  S.pets=S.pets.filter(x=>x!=q);S.sel.delete(q.id);
+  let r=Math.random()*100,g=GIFT_R[0];for(const x of GIFT_R){if((r-=x.w)<=0){g=x;break}}
+  if(g.id.startsWith('jest')){const k=g.id=='jest1'?'huge':g.id=='jest2'?'titan':null;S.pets.push({id:S.uid++,t:'jest',...(k?{[k]:true}:{}),lock:false,eq:false});
+   if(window.Chat)Chat.secret('WOW! '+$('nick').textContent+' got a '+g.n+' from the Gift Box!')}
+  else{const e=S.pb[g.id],base=e&&e.end>Date.now()?e.end:Date.now();S.pb[g.id]={m:2,end:base+GIFT_BOOST}}
+  S.giftCd=Date.now()+GIFT_CD;S.gift=null;giftOffer();
+  sfx('epic');toast('🎁 You got: '+g.e+' '+g.n+'!',6000,'ann');
+  tick();ui();if(panel)render();Game.saveSoon&&Game.saveSoon()},'Trade')}
+$('gift').onclick=giftClaim;$('giftInfo').onclick=()=>open('gift');
 function fmt(n){n=Math.floor(n);if(n<1e3)return''+n;const u=['K','M','B','T','Qa'];let i=-1;while(n>=1e3&&i<u.length-1){n/=1e3;i++}return (n<10?n.toFixed(2):n<100?n.toFixed(1):Math.floor(n))+u[i]}
 function fmtD(n){return n<1e3?''+(+n.toFixed(1)):fmt(n)}
 function toast(t,ms,cls){const e=document.createElement('div');e.className='toast '+(cls||'');e.textContent=t;$('toasts').appendChild(e);requestAnimationFrame(()=>e.classList.add('show'));setTimeout(()=>{e.classList.remove('show');setTimeout(()=>e.remove(),250)},ms||1800)}
@@ -210,16 +251,47 @@ function hatch(silent,tier){
    setTimeout(()=>{$('ov').className='';res.className='';S.busy=false;autoWait=Date.now()+1500;ui();if(panel=='inv')render()},sec?2600:S.auto?1000:1700)
   },d)},520);
  return true}
+function hatch3(){
+ const egg=EGGS[S.world],cost=egg.cost*3;
+ if(!S.unlocked.lava)return toast('🔒 Unlock the Lava world to use x3 Hatch!');
+ if(S.busy||!S.in)return false;
+ if(S.pets.length+3>cap()){toast('Storage full!');return false}
+ if(S.coins<cost){toast('Not enough coins!');sfx('err');return false}
+ add(-cost);S.busy=true;sfx('buy');
+ const ts=[roll(),roll(),roll()],ps=ts.map(t=>PETS[t]),dels=ts.map(t=>!!adMap()[t]),sec=ps.some(p=>p.r=='Secret');
+ ts.forEach((t,i)=>{if(!dels[i])S.pets.push({id:S.uid++,t,lock:false,eq:false})});
+ const d=hatchTime(S.up.hatch)/evm('speed'),o3=$('o3'),res=$('res');
+ const dur=ps.map(p=>d+(p.r=='Secret'?10000:0)),maxD=Math.max(...dur);
+ res.className='';$('oe').style.display='none';$('ov').className='show';
+ o3.style.display='flex';o3.innerHTML=ts.map(()=>`<div class="s3"><div class="e3">${egg.e}</div></div>`).join('');
+ const slots=[...o3.querySelectorAll('.s3')];
+ setTimeout(()=>{
+  slots.forEach((sl,i)=>{const e=sl.firstChild;e.style.setProperty('--d',dur[i]+'ms');e.classList.add('shake')});
+  const st=setInterval(()=>sfx('shake'),160);
+  slots.forEach((sl,i)=>setTimeout(()=>{
+   const p=ps[i];
+   sl.innerHTML=`<div class="r3"><div class="rays"></div><div class="big">${p.e}</div><div class="nm">${p.n}</div><div class="pill r-${p.r}">${p.r} · x${p.p}</div><div class="adl">${dels[i]?'🗑️ Auto Deleted':''}</div></div>`;
+   sfx(RC[p.r]>=3?'epic':'pop');
+   if(p.r=='Secret'&&window.Chat)Chat.secret('WOW! '+$('nick').textContent+' just hatched a Secret '+p.n+'!');
+  },dur[i]));
+  setTimeout(()=>{
+   clearInterval(st);
+   setTimeout(()=>{$('ov').className='';o3.style.display='none';o3.innerHTML='';$('oe').style.display='';S.busy=false;autoWait=Date.now()+1500;ui();if(panel=='inv')render()},sec?2800:2000)
+  },maxD)},520);
+ return true}
 $('hatch').onclick=()=>hatch();
+$('hatch3').onclick=hatch3;
 $('auto').onclick=()=>{S.auto=S.auto=='n'?'':'n';ui()};
-setInterval(()=>{if(S.busy||panel||Date.now()<autoWait)return;if(S.auto=='n')hatch(true);else if(S.auto)hatch(true,S.auto)},300);
+setInterval(()=>{if(S.busy||panel||Date.now()<autoWait)return;if(S.auto=='n'){const e=EGGS[S.world];if(S.unlocked.lava&&S.coins>=e.cost*3&&S.pets.length+3<=cap())hatch3();else hatch(true)}else if(S.auto)hatch(true,S.auto)},300);
 $('ov').onclick=()=>{};
 function ui(){
  const egg=EGGS[S.world];if(S.auto&&S.auto!='n'&&!tierOn(S.auto))S.auto='';
+ $('giftWrap').style.display=S.world=='circus'?'block':'none';
  $('world').textContent=WORLDS[S.world].e+' '+WORLDS[S.world].n;$('game').dataset.world=S.world;
  $('coins').textContent='🪙 '+fmt(S.coins);
  $('eggName').textContent=egg.n;$('eggIcon').textContent=egg.e;
  $('hatch').textContent=`Hatch 🪙 ${fmt(egg.cost)}`;
+ $('hatch3').textContent=S.unlocked.lava?`Hatch x3 🪙 ${fmt(egg.cost*3)}`:'🔒 Hatch x3 (Lava)';$('hatch3').className='btn '+(S.unlocked.lava?'':'gray');
  $('auto').textContent='Auto Hatch: '+(S.auto=='n'?'ON':'OFF');$('auto').className='btn '+(S.auto=='n'?'':'gray');
  $('autoBtn').textContent='🤖 Auto Clicker: '+(S.autoClick?'ON':'OFF');$('autoBtn').className='btn '+(S.autoClick?'':'gray');
  const lk=(1+S.up.luck*.05)*evm('luck'),w=egg.loot.map(([t,c],i)=>[t,i?c*lk:c]),tot=w.reduce((a,x)=>a+x[1],0);
@@ -267,6 +339,11 @@ function render(){
    <button class="btn ${mx?'gray':'orange'}" data-u="${k}" ${mx?'disabled':''}>${mx?'MAX':'🪙 '+fmt(u.cost(l))}</button></div>`}).join('');
   pb.querySelectorAll('[data-u]').forEach(b=>b.onclick=()=>{const k=b.dataset.u,u=UP[k],l=S.up[k];
    if(l>=u.max)return;const c=u.cost(l);if(S.coins<c){sfx('err');return toast('Not enough coins!')}add(-c);S.up[k]++;sfx('buy');render()})}
+ else if(panel=='gift'){$('pt').textContent='🎁 Gift Box';const o=giftOffer(),has=!!giftFind(),left=giftLeft();
+  pb.innerHTML=`<div style="font-weight:700;font-size:18px;margin-bottom:8px">📥 You give</div>
+  <div class="row"><div class="ic">${PETS[o.t].e}</div><div class="tx"><b>${esc(reqName(o))}</b><small>${PETS[o.t].r} · ${has?'✅ You have it':'❌ You don\'t have it'}</small></div></div>
+  <div style="font-weight:700;font-size:18px;margin:6px 0 8px">🎁 You can get</div>
+  ${GIFT_R.map(g=>`<div class="row"><div class="ic">${g.e}</div><div class="tx"><b>${g.n}</b>${g.r?`<small><span class="pill r-${g.r}" style="font-size:11px;padding:1px 8px;box-shadow:none">${g.r}</span></small>`:''}</div><b>${+g.w.toFixed(g.w<1?3:2)}%</b></div>`).join('')}`}
  else if(panel=='lb'){$('pt').textContent='🏆 Leaderboard';pb.innerHTML=lbHtml()}
  else if(panel=='chat'){$('pt').textContent='💬 Chat';pb.innerHTML=`<div id="cmsgs" style="height:min(46vh,340px);overflow:auto;margin-bottom:10px">${chatHtml()}</div><div style="display:flex;gap:8px;align-items:center"><input class="inp" id="cin" maxlength="150" placeholder="Write a message…" autocomplete="off" style="margin-top:0"><button class="btn" id="csend">Send</button></div>`;
   $('csend').onclick=chatSend;$('cin').addEventListener('keydown',e=>{if(e.key=='Enter')chatSend()});const el=$('cmsgs');el.scrollTop=el.scrollHeight;chatUpd()}
@@ -287,7 +364,7 @@ function render(){
   const inv=S.pets.filter(p=>!p.eq).sort(bySort);
   h+=`<div class="grid">${inv.map(p=>`<div class="pet r-${PETS[p.t].r} ${p.titan?'ti':''} ${S.sel.has(p.id)?'sel':''}" data-i="${p.id}"><span class="badge">${p.lock?'🔒':''}</span><div class="e">${PETS[p.t].e}</div><small><b>${pn(p)}</b></small><small>x${+pw(p).toFixed(2)}</small></div>`).join('')||'<p style="text-align:center">No pets in inventory.</p>'}</div>`;
   if(!S.multi&&sel[0]){const p=sel[0],d=PETS[p.t];h+=`<div class="row" style="margin-top:12px;flex-wrap:wrap"><div class="ic">${d.e}</div><div class="tx"><b>${pn(p)}</b><small>${d.r} · +${+pw(p).toFixed(2)} multiplier</small></div>
-   <button class="btn" id="eqb">${p.eq?'Unequip':'Equip'}</button><button class="btn orange" id="lk">${p.lock?'Unlock':'Lock'}</button><button class="btn red" id="del">Delete</button><button class="btn blue" id="craft" ${p.titan||craftList(p).length<3?'disabled':''}>${p.titan?'MAX':(p.huge?'Titanic ':'')+'Craft ('+Math.min(craftList(p).length,3)+'/3)'}</button></div>`}
+   <button class="btn" id="eqb">${p.eq?'Unequip':'Equip'}</button><button class="btn orange" id="lk">${p.lock?'Unlock':'Lock'}</button><button class="btn red" id="del">Delete</button><button class="btn blue" id="craft" ${p.titan||craftList(p).length<3?'disabled':''}>${p.titan?'MAX':'Craft ('+Math.min(craftList(p).length,3)+'/3)'}</button></div>`}
   pb.innerHTML=h;
   pb.querySelectorAll('[data-i]').forEach(e=>e.onclick=()=>{const id=+e.dataset.i,p=S.pets.find(x=>x.id==id);if(S.multi){if(p.eq)return toast('Unequip it first!');S.sel.has(id)?S.sel.delete(id):S.sel.add(id)}else{S.sel.clear();S.sel.add(id)}render()});
   const g=id=>pb.querySelector('#'+id);
@@ -304,16 +381,18 @@ function render(){
   if(g('del'))g('del').onclick=()=>{const p=sel[0];if(p.lock)return toast('Pet is locked!');if(p.eq)return toast('Unequip it first!');const go=()=>{S.pets=S.pets.filter(x=>x!=p);S.sel.clear();render()};(p.huge||p.titan||PETS[p.t].r=='Secret')?ask('Delete '+pn(p)+'? This cannot be undone.',go):go()}
   if(g('craft'))g('craft').onclick=()=>{const p=sel[0],l=craftList(p);if(l.length<3)return;const use=[p,...l.filter(x=>x!=p)].slice(0,3);S.pets=S.pets.filter(x=>!use.includes(x));const nk=p.huge?'titan':'huge';S.pets.push({id:S.uid++,t:p.t,[nk]:true,lock:false,eq:false});S.sel.clear();sfx('epic');toast('Crafted '+TIERS[nk].n+' '+PETS[p.t].n+'!');render()}}
 }
-window.Game={save:()=>({coins:S.coins,world:S.world,unlocked:S.unlocked,up:S.up,pets:S.pets,uid:S.uid,autoClick:S.autoClick,autoDel:S.autoDel,autoDelH:S.autoDelH,autoDelT:S.autoDelT,rw:S.rw?1:0,snd:sound?1:0}),
- load:d=>{S.coins=d.coins||0;S.world=EGGS[d.world]?d.world:'spawn';S.unlocked=Object.assign({spawn:1},d.unlocked);S.up=Object.assign({clicks:0,luck:0,equips:0,storage:0,auto:0,hatch:0},d.up);S.pets=(d.pets||[]).filter(p=>PETS[p.t]);S.uid=d.uid||(1+S.pets.reduce((m,p)=>Math.max(m,p.id),0));S.autoClick=d.autoClick!==false;S.autoDel=d.autoDel||{};S.autoDelH=d.autoDelH||{};S.autoDelT=d.autoDelT||{};S.rw=!!d.rw;sound=music=d.snd!==0;$('snd').textContent=sound?'🔊':'🔇';S.in=true;ui()}};
+window.Game={save:()=>({coins:S.coins,world:S.world,unlocked:S.unlocked,up:S.up,pets:S.pets,uid:S.uid,autoClick:S.autoClick,autoDel:S.autoDel,autoDelH:S.autoDelH,autoDelT:S.autoDelT,rw:S.rw?1:0,snd:sound?1:0,gift:S.gift,giftCd:S.giftCd,pb:S.pb}),
+ load:d=>{S.coins=d.coins||0;S.world=EGGS[d.world]?d.world:'spawn';S.unlocked=Object.assign({spawn:1},d.unlocked);S.up=Object.assign({clicks:0,luck:0,equips:0,storage:0,auto:0,hatch:0},d.up);S.pets=(d.pets||[]).filter(p=>PETS[p.t]);S.uid=d.uid||(1+S.pets.reduce((m,p)=>Math.max(m,p.id),0));S.autoClick=d.autoClick!==false;S.autoDel=d.autoDel||{};S.autoDelH=d.autoDelH||{};S.autoDelT=d.autoDelT||{};S.rw=!!d.rw;S.gift=d.gift&&PETS[d.gift.t]?d.gift:null;S.giftCd=+d.giftCd||0;S.pb=d.pb||{};sound=music=d.snd!==0;$('snd').textContent=sound?'🔊':'🔇';S.in=true;ui()}};
 const EVI={coins:'🪙',luck:'🍀',speed:'⚡'};let evKey='';
 function tierOn(k){const x=S.tier[k];return !!(x&&x.end>Date.now()&&x.egg===S.world)}
-function evm(k){const e=S.ev[k];return e&&e.end>Date.now()?e.m:1}
+function evm(k){const e=S.ev[k],p=S.pb[k];return (e&&e.end>Date.now()?e.m:1)*(p&&p.end>Date.now()?p.m:1)}
 function tf(s){const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return (d?d+'d ':'')+(h?h+'h ':'')+(m?m+'m ':'')+(s%60)+'s'}
 const UPD=new Date('2026-11-10T16:00:00+01:00').getTime();
 const DELIVER=UPD-5*60*1000,REWARDS=['titan','huge',''];
 function cd(s){const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),p=[];if(d)p.push(d+'d');if(d||h)p.push(h+'h');if(d||h||m)p.push(m+'m');p.push(s%60+'s');return p.join(' ')}
 function tick(){const now=Date.now();let h='',key='';for(const k of ['coins','luck','speed']){const e=S.ev[k];if(e&&e.end>now){h+=`<div class="pill" style="font-size:16px;background:#ffe27a;color:#4a2b00">x${e.m} ${EVI[k]}: ${tf(Math.ceil((e.end-now)/1000))}</div>`;key+=k+e.m+e.end}}
+ for(const k of ['coins','luck','speed']){const e=S.pb[k];if(e&&e.end>now){h+=`<div class="pill" style="font-size:16px;background:#ffe27a;color:#4a2b00">🎁 x${e.m} ${EVI[k]}: ${tf(Math.ceil((e.end-now)/1000))}</div>`;key+='p'+k+e.m+e.end}}
+ {const l=giftLeft(),g=$('gsub'),b=$('gift');g.style.display=l>0?'inline-block':'none';b.classList.toggle('cd',l>0);if(l>0)g.textContent='⏳ '+cd(l)}
  for(const k in TIERS){const x=S.tier[k];if(x&&x.end>now&&EGGS[x.egg])h+=`<div class="pill" style="font-size:16px;background:#ffe27a;color:#4a2b00">${TIERS[k].n} ${EGGS[x.egg].e}: ${tf(Math.ceil((x.end-now)/1000))}</div>`;key+=k+tierOn(k)+(x?x.end:0)}
  {const r=Math.ceil((UPD-now)/1000);$('updt').textContent=r>0?cd(r):'Live now! 🎉'}
  {const el=$('rwt');if(el){const r=Math.ceil((DELIVER-now)/1000);el.textContent=r>0?'🎁 Rewards delivered in: '+cd(r):'🎁 Rewards delivered!'}}
