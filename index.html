@@ -137,7 +137,7 @@ body{font-family:'Fredoka','Trebuchet MS',Arial,sans-serif;font-weight:500;color
 <div id="login"><div class="card"><div id="lcoin">🪙</div><div id="ltitle">Coin Clicker</div>
 <div id="ltabs"><button class="btn" id="ltab1">Log in</button><button class="btn gray" id="ltab2">Register</button></div><input class="inp" id="lnick" placeholder="Nickname" maxlength="20" autocomplete="username"><input class="inp" id="lpass" type="password" placeholder="Password" maxlength="50" autocomplete="current-password">
 <div id="lerr"></div><div style="margin-top:14px"><button class="btn blue" id="lgo" style="width:100%">Log in</button></div></div></div>
-<div id="upd"><div>🎪 UPDATE 2 + ⭐ ABUSE:</div><div id="updt"></div></div>
+<div id="upd"><div>🪙 COIN WEDNESDAY:</div><div id="updt"></div></div>
 <div id="toasts"></div>
 <script>
 const $=id=>document.getElementById(id);
@@ -318,9 +318,7 @@ function chatUpd(){const last=chatData.length?chatData[chatData.length-1].t:0;if
  const el=$('cmsgs');if(el){const bot=el.scrollHeight-el.scrollTop-el.clientHeight<60;el.innerHTML=chatHtml();if(bot)el.scrollTop=el.scrollHeight}}
 function setChat(d){chatData=d;if(!chatInit){chatInit=true;chatSeen=d.length?d[d.length-1].t:0}chatUpd()}
 function chatSend(){const v=$('cin').value.trim();if(!v)return;if(Date.now()-chatLast<1200)return toast('Slow down!');if(!window.Chat)return toast('Chat not ready');chatLast=Date.now();$('cin').value='';Chat.send(v.slice(0,150)).catch(e=>toast('Chat failed: '+(e.code||e.message)))}
-function rwShow(){const on=panel=='lb'&&LBmode=='power';$('modal').classList.toggle('rw',on);const el=$('rw');el.style.display=on?'':'none';if(!on)return;
- if(!el.dataset.f){el.dataset.f=1;el.innerHTML=`<div class="card" style="width:min(620px,100%);padding:10px 14px;text-align:center"><div style="display:flex;gap:10px;justify-content:space-around;flex-wrap:wrap;font-weight:700">${REWARDS.map((k,i)=>`<div><div style="font-size:24px">${['🥇','🥈','🥉'][i]}:</div><div style="font-size:15px">${PETS.phx.e} ${k?TIERS[k].n+' ':''}${PETS.phx.n}</div></div>`).join('')}</div><div id="rwt" style="font-size:13px;opacity:.8;margin-top:6px"></div></div>`}
- const r=Math.ceil((DELIVER-Date.now())/1000);$('rwt').textContent=r>0?'🎁 Rewards delivered in: '+cd(r):'🎁 Rewards delivered!'}
+function rwShow(){$('modal').classList.remove('rw');$('rw').style.display='none'}
 function claimCheck(){const d=S.rewardsDoc;if(!S.in||S.rw||!d||!Game.uid||!d.winners)return;const i=d.winners.findIndex(w=>w.uid===Game.uid);if(i<0||REWARDS[i]===undefined)return;
  S.rw=1;const k=REWARDS[i];S.pets.push({id:S.uid++,t:'phx',...(k?{[k]:true}:{}),lock:false,eq:false});toast('🎁 Pet Power #'+(i+1)+' reward: '+(k?TIERS[k].n+' ':'')+PETS.phx.n+'!',10000,'ann');sfx('epic');if(panel=='inv')render()}
 function open(p){panel=p;$('modal').className='show';S.sel.clear();S.multi=false;if(p=='lb'){LBdata=null;LBerr='';loadLB()}render()}
@@ -389,7 +387,7 @@ const EVI={coins:'🪙',luck:'🍀',speed:'⚡'};let evKey='';
 function tierOn(k){const x=S.tier[k];return !!(x&&x.end>Date.now()&&x.egg===S.world)}
 function evm(k){const e=S.ev[k],p=S.pb[k];return (e&&e.end>Date.now()?e.m:1)*(p&&p.end>Date.now()?p.m:1)}
 function tf(s){const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);return (d?d+'d ':'')+(h?h+'h ':'')+(m?m+'m ':'')+(s%60)+'s'}
-const UPD=new Date('2026-11-10T16:00:00+01:00').getTime();
+const UPD=new Date('2026-11-11T16:00:00+01:00').getTime();
 const DELIVER=UPD-5*60*1000,REWARDS=['titan','huge',''];
 function cd(s){const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),p=[];if(d)p.push(d+'d');if(d||h)p.push(h+'h');if(d||h||m)p.push(m+'m');p.push(s%60+'s');return p.join(' ')}
 function tick(){const now=Date.now();let h='',key='';for(const k of ['coins','luck','speed']){const e=S.ev[k];if(e&&e.end>now){h+=`<div class="pill" style="font-size:16px;background:#ffe27a;color:#4a2b00">x${e.m} ${EVI[k]}: ${tf(Math.ceil((e.end-now)/1000))}</div>`;key+=k+e.m+e.end}}
